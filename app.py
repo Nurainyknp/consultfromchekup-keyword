@@ -70,23 +70,26 @@ with st.expander("คลิกเพื่อเลือกข้อมูล",
         with col_vs:
             st.markdown("""
                 <div style="background-color:#ffffff; border:1px solid #ddd; border-radius:8px; padding:10px;">
-                <strong>🔹 Vital signs</strong><br><br>
+                <strong>🔹 Vital signs</strong>
             """, unsafe_allow_html=True)
 
-            # ปุ่มแถวบนแนวนอน
-            row1 = st.columns([1.2, 1.2, 1.1])
+            # ✅ เลื่อนลง 1 บรรทัด
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            # ✅ ปุ่มแถวบนแนวนอน: BP สูง | ชีพจรเร็ว | ชีพจรช้า
+            row1 = st.columns([1, 0.05, 1, 0.05, 1])
             with row1[0]:
                 st.button("BP สูง", on_click=lambda: add_keyword("Abnormal BP"))
-            with row1[1]:
-                st.button("ชีพจรเร็ว", on_click=lambda: add_keyword("Abnormal Pulse"))
             with row1[2]:
+                st.button("ชีพจรเร็ว", on_click=lambda: add_keyword("Abnormal Pulse"))
+            with row1[4]:
                 st.button("ชีพจรช้า", on_click=lambda: add_keyword("Abnormal Pulse"))
 
-            # ปุ่มแถวล่างแนวนอน
-            row2 = st.columns([1, 1])
+            # ✅ ปุ่มแถวล่างแนวนอน: อุณหภูมิผิดปกติ | การหายใจผิดปกติ
+            row2 = st.columns([1, 0.05, 1])
             with row2[0]:
                 st.button("อุณหภูมิร่างกายผิดปกติ", on_click=lambda: add_keyword("Abnormal Temperature"))
-            with row2[1]:
+            with row2[2]:
                 st.button("การหายใจผิดปกติ", on_click=lambda: add_keyword("Abnormal Respiration"))
 
             st.markdown("</div>", unsafe_allow_html=True)
