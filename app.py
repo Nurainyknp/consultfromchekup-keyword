@@ -1,7 +1,9 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
+# -------------------------------
 # ใช้ session_state เก็บ keyword
+# -------------------------------
 if "selected_keywords" not in st.session_state:
     st.session_state.selected_keywords = []
 
@@ -14,17 +16,16 @@ def add_keyword(keyword):
 def clear_keywords():
     st.session_state.selected_keywords = []
 
-# 💬 แสดงข้อความรวม
+# -------------------------------
+# แสดงข้อความรวม
+# -------------------------------
 combined_text = "; ".join(st.session_state.selected_keywords)
 
-# ================================
-# 🔘 ส่วนบน: ปุ่ม + ช่อง + ล้าง
-# ================================
 st.markdown("### 📝 ระบบช่วยเขียนข้อความ consult")
 
 col1, col2, col3 = st.columns([2, 6, 2])
 
-# ✅ ปุ่มคัดลอกข้อความ (HTML + JS)
+# 🔘 ปุ่มคัดลอกข้อความ
 with col1:
     components.html(
         f"""
@@ -36,11 +37,11 @@ with col1:
         height=60,
     )
 
-# ✅ ช่องแสดงข้อความ
+# 💬 กล่องแสดงข้อความรวม
 with col2:
     st.text_area("รวมคำ consult", value=combined_text, height=80)
 
-# ✅ ปุ่มล้างข้อความ (HTML)
+# 🗑 ปุ่มล้างข้อความ
 with col3:
     st.markdown(
         """
@@ -52,24 +53,42 @@ with col3:
         unsafe_allow_html=True,
     )
 
-# ================================
-# 🔽 หัวข้อหลัก (Expander)
-# ================================
+# -------------------------------
+# Header style
+# -------------------------------
+def section_header(title):
+    st.markdown(
+        f"""
+        <div style='background-color:#E0E0E0; padding:8px; border-radius:5px; font-weight:bold; font-size:18px; margin-top:20px;'>
+            {title}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-with st.expander("1. ผล Vital sign และการตรวจร่างกาย"):
-    col1, col2 = st.columns(2)
-    with col1:
-        st.button("BP สูง", on_click=lambda: add_keyword("ความดันโลหิตสูง"))
-        st.button("HR เร็ว", on_click=lambda: add_keyword("หัวใจเต้นเร็ว")
-        )
-    with col2:
-        st.button("BMI สูง", on_click=lambda: add_keyword("ภาวะน้ำหนักเกิน"))
+# -------------------------------
+# หัวข้อ 1: Vital signs & PE
+# -------------------------------
+section_header("1. ผล Vital signs และการตรวจร่างกาย")
 
-with st.expander("2. สิ่งส่งตรวจห้องปฏิบัติการ"):
-    col1, col2 = st.columns(2)
-    with col1:
-        st.button("LDL สูง", on_click=lambda: add_keyword("ภาวะไขมันในเลือดผิดปกติ (LDL)"))
-        st.button("FBS สูง", on_click=lambda: add_keyword("ระดับน้ำตาลในเลือดสูง (FBS)"))
-    with col2:
-        st.button("HbA1c สูง", on_click=lambda: add_keyword("ภาวะเบาหวาน (HbA1c สูง)"))
+with st.expander("คลิกเพื่อเลือกข้อมูล"):
+    col_vs, col_pe = st.columns(2)
 
+    # ฝั่งซ้าย: Vital Signs
+    with col_vs:
+        st.markdown("**🔹 Vital signs**")
+        st.button("BP สูง", on_click=lambda: add_keyword("Abnormal BP"))
+        st.button("ชีพจรเร็ว", on_click=lambda: add_keyword("Abnormal Pulse"))
+        st.button("ชีพจรช้า", on_click=lambda: add_keyword("Abnormal Pulse"))
+        st.button("อุณหภูมิร่างกายผิดปกติ", on_click=lambda: add_keyword("Abnormal Temperature"))
+        st.button("การหายใจผิดปกติ", on_click=lambda: add_keyword("Abnormal Respiration"))
+
+    # ฝั่งขวา: การตรวจร่างกาย
+    with col_pe:
+        st.markdown("**🔹 การตรวจร่างกาย (PE)**")
+        pe_input = st.text_area("กรุณาระบุผลตรวจร่างกายเพิ่มเติม", placeholder="พิมพ์ภาษาไทยหรืออังกฤษ")
+
+        if pe_input.strip():
+            keyword_pe = f"Abnormal PE ({pe_input.strip()})"
+            if keyword_pe not in st.session_state.selected_keywords:
+                st.session_state.selected_keywords.append(keyword_pe)
