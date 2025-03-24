@@ -1,43 +1,87 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# ✅ เปิด wide layout
+# ===============================
+# ✅ Wide layout + Theme session
+# ===============================
 st.set_page_config(layout="wide")
 
-# -------------------------------
-# ใช้ session_state เก็บ keyword
-# -------------------------------
+if "theme_mode" not in st.session_state:
+    st.session_state.theme_mode = "light"
 if "selected_keywords" not in st.session_state:
     st.session_state.selected_keywords = []
 
-# เพิ่ม keyword
+# ===============================
+# ✅ Theme toggle button (top right)
+# ===============================
+col_theme_left, col_theme_spacer, col_theme_right = st.columns([10, 1, 2])
+with col_theme_right:
+    selected = st.radio("โหมด", ["🌞 Light", "🌙 Night"], horizontal=True, label_visibility="collapsed")
+    st.session_state.theme_mode = "dark" if "Night" in selected else "light"
+
+# ===============================
+# ✅ Custom CSS per theme
+# ===============================
+if st.session_state.theme_mode == "dark":
+    custom_css = """
+        <style>
+            body, .block-container {
+                background-color: #1e1e1e !important;
+                color: white !important;
+            }
+            .stTextArea textarea, .stTextInput input {
+                background-color: #2c2c2c !important;
+                color: white !important;
+            }
+            .stButton > button {
+                background-color: #444 !important;
+                color: white !important;
+            }
+            .stRadio > div {
+                color: white !important;
+            }
+        </style>
+    """
+else:
+    custom_css = """
+        <style>
+            body, .block-container {
+                background-color: white !important;
+                color: black !important;
+            }
+        </style>
+    """
+st.markdown(custom_css, unsafe_allow_html=True)
+
+# ===============================
+# ✅ Functions
+# ===============================
 def add_keyword(keyword):
     if keyword not in st.session_state.selected_keywords:
         st.session_state.selected_keywords.append(keyword)
 
-# ล้างข้อความ
 def clear_keywords():
     st.session_state.selected_keywords = []
 
-# รวมข้อความ
+# ===============================
+# ✅ Consult keyword box + buttons
+# ===============================
 combined_text = "; ".join(st.session_state.selected_keywords)
 
-# -------------------------------
-# ส่วนบน: กล่องรวมข้อความ + ปุ่ม
-# -------------------------------
 with st.container():
-    st.markdown("""
-        <div style="background-color:#f0f2f6; padding:15px; border-radius:10px; margin-bottom:20px;">
+    bg_color = "#333" if st.session_state.theme_mode == "dark" else "#f0f2f6"
+    st.markdown(f"""
+        <div style="background-color:{bg_color}; padding:15px; border-radius:10px; margin-bottom:20px;">
             <h3 style="margin-top:0;">📝 ระบบช่วยเขียนข้อความ consult</h3>
-        """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([2, 6, 2])
 
     with col1:
         components.html(
             f"""
-            <button onclick="navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!');"
-                    style="padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;">
+            <button onclick=\"navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!');\"
+                    style=\"padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;\">
                 📋 คัดลอกข้อความ
             </button>
             """,
@@ -53,11 +97,12 @@ with st.container():
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# -------------------------------
-# หัวข้อ 1: Vital Signs & PE
-# -------------------------------
-st.markdown("""
-    <div style='background-color:#E0E0E0; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>
+# ===============================
+# ✅ Section: Vital signs and PE
+# ===============================
+st.markdown(f"""
+    <div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; 
+                padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>
         1. ผล Vital signs และการตรวจร่างกาย
     </div>
 """, unsafe_allow_html=True)
@@ -68,15 +113,14 @@ with st.expander("คลิกเพื่อเลือกข้อมูล",
 
         # 🔹 ฝั่งซ้าย: Vital Signs
         with col_vs:
-            st.markdown("""
-                <div style="background-color:#ffffff; border:1px solid #ddd; border-radius:8px; padding:10px;">
+            box_color = "#2c2c2c" if st.session_state.theme_mode == "dark" else "#ffffff"
+            st.markdown(f"""
+                <div style="background-color:{box_color}; border:1px solid #888; border-radius:8px; padding:10px;">
                 <strong>🔹 Vital signs</strong>
             """, unsafe_allow_html=True)
 
-            # ✅ เลื่อนลง 1 บรรทัด
             st.markdown("<br>", unsafe_allow_html=True)
 
-            # ✅ ปุ่มแถวบนแนวนอน: BP สูง | ชีพจรเร็ว | ชีพจรช้า
             row1 = st.columns([1, 0.05, 1, 0.05, 1])
             with row1[0]:
                 st.button("BP สูง", on_click=lambda: add_keyword("Abnormal BP"))
@@ -85,7 +129,6 @@ with st.expander("คลิกเพื่อเลือกข้อมูล",
             with row1[4]:
                 st.button("ชีพจรช้า", on_click=lambda: add_keyword("Abnormal Pulse"))
 
-            # ✅ ปุ่มแถวล่างแนวนอน: อุณหภูมิผิดปกติ | การหายใจผิดปกติ
             row2 = st.columns([1, 0.05, 1])
             with row2[0]:
                 st.button("อุณหภูมิร่างกายผิดปกติ", on_click=lambda: add_keyword("Abnormal Temperature"))
@@ -96,8 +139,9 @@ with st.expander("คลิกเพื่อเลือกข้อมูล",
 
         # 🔹 ฝั่งขวา: การตรวจร่างกาย (PE)
         with col_pe:
-            st.markdown("""
-                <div style="background-color:#ffffff; border:1px solid #ddd; border-radius:8px; padding:10px;">
+            box_color = "#2c2c2c" if st.session_state.theme_mode == "dark" else "#ffffff"
+            st.markdown(f"""
+                <div style="background-color:{box_color}; border:1px solid #888; border-radius:8px; padding:10px;">
                 <strong>🔹 การตรวจร่างกาย (PE)</strong><br><br>
             """, unsafe_allow_html=True)
 
