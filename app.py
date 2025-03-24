@@ -43,14 +43,8 @@ if st.session_state.theme_mode == "dark":
         </style>
     """
 else:
-    custom_css = """
-        <style>
-            body, .block-container {
-                background-color: white !important;
-                color: black !important;
-            }
-        </style>
-    """
+    custom_css = ""  # Light mode uses Streamlit default appearance
+
 st.markdown(custom_css, unsafe_allow_html=True)
 
 # ===============================
