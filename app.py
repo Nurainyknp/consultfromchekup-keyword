@@ -2,7 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 # ✅ เปิด wide mode
-st.set_page_config(page_title="Consult Keyword Generator", layout="wide")
+st.set_page_config(layout="wide")
 
 # -------------------------------
 # ใช้ session_state เก็บ keyword
@@ -19,27 +19,25 @@ def add_keyword(keyword):
 def clear_keywords():
     st.session_state.selected_keywords = []
 
-# -------------------------------
-# แสดงข้อความรวม
-# -------------------------------
+# รวมข้อความ
 combined_text = "; ".join(st.session_state.selected_keywords)
 
 # -------------------------------
-# Header
+# ส่วนบน: กล่องรวมข้อความ + ปุ่ม
 # -------------------------------
-st.markdown("<h2 style='color:#005B9A;'>📝 ระบบช่วยเขียนข้อความ consult</h2>", unsafe_allow_html=True)
-
-# ===============================
-# 🔘 Top Bar (Copy + Text + Clear)
-# ===============================
 with st.container():
-    col1, col2, col3 = st.columns([2, 7, 2])
+    st.markdown("""
+        <div style="background-color:#f0f2f6; padding:15px; border-radius:10px; margin-bottom:20px;">
+            <h3 style="margin-top:0;">📝 ระบบช่วยเขียนข้อความ consult</h3>
+        """, unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns([2, 6, 2])
 
     with col1:
         components.html(
             f"""
             <button onclick="navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!');"
-                    style="padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer; width:100%;">
+                    style="padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;">
                 📋 คัดลอกข้อความ
             </button>
             """,
@@ -53,47 +51,49 @@ with st.container():
         if st.button("🗑 ล้างข้อความ"):
             clear_keywords()
 
-# ===============================
-# 🔲 ฟังก์ชันสร้าง Card Box สำหรับหัวข้อ
-# ===============================
-def card_container(title):
-    st.markdown(
-        f"""
-        <div style='background-color:#F3F6FA; padding:20px 25px; border-radius:12px; margin-top:25px; border-left:5px solid #0D47A1'>
-            <h4 style='font-weight:bold; color:#0D47A1;'>{title}</h4>
-        """,
-        unsafe_allow_html=True,
-    )
-
-def card_end():
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ===============================
-# 🩺 หัวข้อ 1: Vital Signs & PE
-# ===============================
-card_container("1. ผล Vital signs และการตรวจร่างกาย")
+# -------------------------------
+# หัวข้อ 1: Vital Signs & PE
+# -------------------------------
+st.markdown("""
+    <div style='background-color:#E0E0E0; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>
+        1. ผล Vital signs และการตรวจร่างกาย
+    </div>
+""", unsafe_allow_html=True)
 
-with st.expander("คลิกเพื่อเลือกข้อมูล", expanded=False):
-    col_vs, col_pe = st.columns(2)
+with st.expander("คลิกเพื่อเลือกข้อมูล", expanded=True):
+    with st.container():
+        col_vs, col_pe = st.columns(2)
 
-    # ฝั่งซ้าย: Vital Signs
-    with col_vs:
-        st.markdown("**🔹 Vital signs**")
-        st.button("BP สูง", on_click=lambda: add_keyword("Abnormal BP"))
-        st.button("ชีพจรเร็ว", on_click=lambda: add_keyword("Abnormal Pulse"))
-        st.button("ชีพจรช้า", on_click=lambda: add_keyword("Abnormal Pulse"))
-        st.button("อุณหภูมิร่างกายผิดปกติ", on_click=lambda: add_keyword("Abnormal Temperature"))
-        st.button("การหายใจผิดปกติ", on_click=lambda: add_keyword("Abnormal Respiration"))
+        # 🔹 ฝั่งซ้าย: Vital Signs
+        with col_vs:
+            st.markdown("""
+                <div style="background-color:#ffffff; border:1px solid #ddd; border-radius:8px; padding:15px;">
+                <strong>🔹 Vital signs</strong><br><br>
+            """, unsafe_allow_html=True)
 
-    # ฝั่งขวา: PE
-    with col_pe:
-        st.markdown("**🔹 การตรวจร่างกาย (PE)**")
-        pe_input = st.text_input("พิมพ์ผลตรวจร่างกาย", placeholder="พิมพ์ภาษาไทยหรืออังกฤษ")
+            st.button("BP สูง", on_click=lambda: add_keyword("Abnormal BP"))
+            st.button("ชีพจรเร็ว", on_click=lambda: add_keyword("Abnormal Pulse"))
+            st.button("ชีพจรช้า", on_click=lambda: add_keyword("Abnormal Pulse"))
+            st.button("อุณหภูมิร่างกายผิดปกติ", on_click=lambda: add_keyword("Abnormal Temperature"))
+            st.button("การหายใจผิดปกติ", on_click=lambda: add_keyword("Abnormal Respiration"))
 
-        if st.button("➕ เพิ่ม PE"):
-            if pe_input.strip():
-                keyword_pe = f"Abnormal PE ({pe_input.strip()})"
-                if keyword_pe not in st.session_state.selected_keywords:
-                    st.session_state.selected_keywords.append(keyword_pe)
+            st.markdown("</div>", unsafe_allow_html=True)
 
-card_end()
+        # 🔹 ฝั่งขวา: การตรวจร่างกาย
+        with col_pe:
+            st.markdown("""
+                <div style="background-color:#ffffff; border:1px solid #ddd; border-radius:8px; padding:15px;">
+                <strong>🔹 การตรวจร่างกาย (PE)</strong><br><br>
+            """, unsafe_allow_html=True)
+
+            pe_input = st.text_input("พิมพ์ผลตรวจร่างกาย", placeholder="พิมพ์ภาษาไทยหรืออังกฤษ")
+
+            if st.button("➕ เพิ่ม PE"):
+                if pe_input.strip():
+                    keyword_pe = f"Abnormal PE ({pe_input.strip()})"
+                    if keyword_pe not in st.session_state.selected_keywords:
+                        st.session_state.selected_keywords.append(keyword_pe)
+
+            st.markdown("</div>", unsafe_allow_html=True)
