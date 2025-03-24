@@ -1,9 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# ===============================
 # ✅ Wide layout + Theme session
-# ===============================
 st.set_page_config(layout="wide")
 
 if "theme_mode" not in st.session_state:
@@ -11,17 +9,13 @@ if "theme_mode" not in st.session_state:
 if "selected_keywords" not in st.session_state:
     st.session_state.selected_keywords = []
 
-# ===============================
 # ✅ Theme toggle button (top right)
-# ===============================
 col_theme_left, col_theme_spacer, col_theme_right = st.columns([10, 1, 2])
 with col_theme_right:
     selected = st.radio("โหมด", ["🌞 Light", "🌙 Night"], horizontal=True, label_visibility="collapsed")
     st.session_state.theme_mode = "dark" if "Night" in selected else "light"
 
-# ===============================
 # ✅ Custom CSS per theme
-# ===============================
 if st.session_state.theme_mode == "dark":
     custom_css = """
         <style>
@@ -47,9 +41,7 @@ else:
 
 st.markdown(custom_css, unsafe_allow_html=True)
 
-# ===============================
 # ✅ Functions
-# ===============================
 def add_keyword(keyword):
     if keyword not in st.session_state.selected_keywords:
         st.session_state.selected_keywords.append(keyword)
@@ -57,9 +49,7 @@ def add_keyword(keyword):
 def clear_keywords():
     st.session_state.selected_keywords = []
 
-# ===============================
 # ✅ Consult keyword box + buttons
-# ===============================
 combined_text = "; ".join(st.session_state.selected_keywords)
 
 with st.container():
@@ -91,9 +81,7 @@ with st.container():
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ===============================
-# ✅ Section: Vital signs and PE
-# ===============================
+# ✅ Section: Vital signs, BMI, PE
 st.markdown(f"""
     <div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; 
                 padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>
@@ -103,35 +91,38 @@ st.markdown(f"""
 
 with st.expander("คลิกเพื่อเลือกข้อมูล", expanded=True):
     with st.container():
-        col_vs, col_pe = st.columns(2)
+        col_vs, col_bmi, col_pe = st.columns(3)
 
-        # 🔹 ฝั่งซ้าย: Vital Signs
+        # 🔹 Vital Signs (Left)
         with col_vs:
             box_color = "#2c2c2c" if st.session_state.theme_mode == "dark" else "#ffffff"
             st.markdown(f"""
                 <div style="background-color:{box_color}; border:1px solid #888; border-radius:8px; padding:10px;">
-                <strong>🔹 Vital signs</strong>
+                <strong>🔹 Vital signs</strong><br><br>
             """, unsafe_allow_html=True)
 
-            st.markdown("<br>", unsafe_allow_html=True)
-
-            row1 = st.columns([1, 0.05, 1, 0.05, 1])
-            with row1[0]:
-                st.button("BP สูง", on_click=lambda: add_keyword("Abnormal BP"))
-            with row1[2]:
-                st.button("ชีพจรเร็ว", on_click=lambda: add_keyword("Abnormal Pulse"))
-            with row1[4]:
-                st.button("ชีพจรช้า", on_click=lambda: add_keyword("Abnormal Pulse"))
-
-            row2 = st.columns([1, 0.05, 1])
-            with row2[0]:
-                st.button("อุณหภูมิร่างกายผิดปกติ", on_click=lambda: add_keyword("Abnormal Temperature"))
-            with row2[2]:
-                st.button("การหายใจผิดปกติ", on_click=lambda: add_keyword("Abnormal Respiration"))
+            st.button("BP สูง", on_click=lambda: add_keyword("Abnormal BP"))
+            st.button("ชีพจรเร็ว", on_click=lambda: add_keyword("Abnormal Pulse"))
+            st.button("ชีพจรช้า", on_click=lambda: add_keyword("Abnormal Pulse"))
+            st.button("อุณหภูมิร่างกายผิดปกติ", on_click=lambda: add_keyword("Abnormal Temperature"))
+            st.button("การหายใจผิดปกติ", on_click=lambda: add_keyword("Abnormal Respiration"))
 
             st.markdown("</div>", unsafe_allow_html=True)
 
-        # 🔹 ฝั่งขวา: การตรวจร่างกาย (PE)
+        # 🔹 BMI (Center)
+        with col_bmi:
+            box_color = "#2c2c2c" if st.session_state.theme_mode == "dark" else "#ffffff"
+            st.markdown(f"""
+                <div style="background-color:{box_color}; border:1px solid #888; border-radius:8px; padding:10px;">
+                <strong>🔹 BMI</strong><br><br>
+            """, unsafe_allow_html=True)
+
+            st.button("BMI ≥ 25", on_click=lambda: add_keyword("BMI ≥ 25"))
+            st.button("BMI ≥ 28", on_click=lambda: add_keyword("BMI ≥ 28"))
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        # 🔹 PE (Right)
         with col_pe:
             box_color = "#2c2c2c" if st.session_state.theme_mode == "dark" else "#ffffff"
             st.markdown(f"""
