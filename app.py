@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# ✅ เปิด wide mode
+# ✅ เปิด wide layout
 st.set_page_config(layout="wide")
 
 # -------------------------------
@@ -73,15 +73,25 @@ with st.expander("คลิกเพื่อเลือกข้อมูล",
                 <strong>🔹 Vital signs</strong><br><br>
             """, unsafe_allow_html=True)
 
-            st.button("BP สูง", on_click=lambda: add_keyword("Abnormal BP"))
-            st.button("ชีพจรเร็ว", on_click=lambda: add_keyword("Abnormal Pulse"))
-            st.button("ชีพจรช้า", on_click=lambda: add_keyword("Abnormal Pulse"))
-            st.button("อุณหภูมิร่างกายผิดปกติ", on_click=lambda: add_keyword("Abnormal Temperature"))
-            st.button("การหายใจผิดปกติ", on_click=lambda: add_keyword("Abnormal Respiration"))
+            # ปุ่มแถวบนแนวนอน
+            row1 = st.columns(3)
+            with row1[0]:
+                st.button("BP สูง", on_click=lambda: add_keyword("Abnormal BP"))
+            with row1[1]:
+                st.button("ชีพจรเร็ว", on_click=lambda: add_keyword("Abnormal Pulse"))
+            with row1[2]:
+                st.button("ชีพจรช้า", on_click=lambda: add_keyword("Abnormal Pulse"))
+
+            # ปุ่มแถวล่างแนวนอน
+            row2 = st.columns(2)
+            with row2[0]:
+                st.button("อุณหภูมิร่างกายผิดปกติ", on_click=lambda: add_keyword("Abnormal Temperature"))
+            with row2[1]:
+                st.button("การหายใจผิดปกติ", on_click=lambda: add_keyword("Abnormal Respiration"))
 
             st.markdown("</div>", unsafe_allow_html=True)
 
-        # 🔹 ฝั่งขวา: การตรวจร่างกาย
+        # 🔹 ฝั่งขวา: การตรวจร่างกาย (PE)
         with col_pe:
             st.markdown("""
                 <div style="background-color:#ffffff; border:1px solid #ddd; border-radius:8px; padding:15px;">
