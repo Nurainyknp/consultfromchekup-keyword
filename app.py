@@ -41,20 +41,13 @@ with col1:
 with col2:
     st.text_area("รวมคำ consult", value=combined_text, height=80)
 
-# 🗑 ปุ่มล้างข้อความ
+# 🗑 ปุ่มล้างข้อความ (ทำงานจริง)
 with col3:
-    st.markdown(
-        """
-        <button onclick="window.location.reload();"
-                style="padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#f44336; color:white; border:none; cursor:pointer;">
-            🗑 ล้างข้อความ
-        </button>
-        """,
-        unsafe_allow_html=True,
-    )
+    if st.button("🗑 ล้างข้อความ"):
+        clear_keywords()
 
 # -------------------------------
-# Header style
+# Header style function
 # -------------------------------
 def section_header(title):
     st.markdown(
@@ -83,12 +76,13 @@ with st.expander("คลิกเพื่อเลือกข้อมูล")
         st.button("อุณหภูมิร่างกายผิดปกติ", on_click=lambda: add_keyword("Abnormal Temperature"))
         st.button("การหายใจผิดปกติ", on_click=lambda: add_keyword("Abnormal Respiration"))
 
-    # ฝั่งขวา: การตรวจร่างกาย
+    # ฝั่งขวา: การตรวจร่างกาย (PE)
     with col_pe:
         st.markdown("**🔹 การตรวจร่างกาย (PE)**")
-        pe_input = st.text_area("กรุณาระบุผลตรวจร่างกายเพิ่มเติม", placeholder="พิมพ์ภาษาไทยหรืออังกฤษ")
+        pe_input = st.text_input("พิมพ์ผลตรวจร่างกาย", placeholder="พิมพ์ภาษาไทยหรืออังกฤษ")
 
-        if pe_input.strip():
-            keyword_pe = f"Abnormal PE ({pe_input.strip()})"
-            if keyword_pe not in st.session_state.selected_keywords:
-                st.session_state.selected_keywords.append(keyword_pe)
+        if st.button("➕ เพิ่ม PE"):
+            if pe_input.strip():
+                keyword_pe = f"Abnormal PE ({pe_input.strip()})"
+                if keyword_pe not in st.session_state.selected_keywords:
+                    st.session_state.selected_keywords.append(keyword_pe)
