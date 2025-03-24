@@ -17,24 +17,26 @@ def clear_keywords():
 # 💬 แสดงข้อความรวม
 combined_text = "; ".join(st.session_state.selected_keywords)
 
-# 🔘 ปุ่ม "คัดลอกข้อความ" + ช่องข้อความ + ปุ่ม Clear
-col1, col2, col3 = st.columns([1.5, 6, 1])
-with col1:
-    if st.button("📋 คัดลอกข้อความ"):
-        # เรียก JavaScript สั่งคัดลอกไป clipboard
-        components.html(
-            f"""
-            <script>
-            navigator.clipboard.writeText("{combined_text}");
-            alert("คัดลอกข้อความเรียบร้อยแล้ว!");
-            </script>
-            """,
-            height=0,
-        )
+# 🔘 Layout 3 ส่วน
+col1, col2, col3 = st.columns([2, 6, 1])
 
+# 🔘 ปุ่ม HTML ที่คัดลอกจริงๆ
+with col1:
+    components.html(
+        f"""
+        <button onclick="navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!')" 
+                style="padding:0.5em 1em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;">
+            📋 คัดลอกข้อความ
+        </button>
+        """,
+        height=40,
+    )
+
+# ช่องแสดงข้อความ
 with col2:
     st.text_area("รวมคำ consult", value=combined_text, height=80)
 
+# ปุ่ม Clear
 with col3:
     st.button("🗑 ล้างข้อความ", on_click=clear_keywords)
 
