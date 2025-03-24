@@ -52,6 +52,8 @@ def add_keyword(keyword):
 
 def clear_keywords():
     st.session_state.selected_keywords = []
+    st.session_state.cbc_selected = False
+    st.session_state.cbc_subitems = []
 
 # ✅ Consult keyword box + buttons
 combined_text = "; ".join(st.session_state.selected_keywords)
@@ -82,10 +84,64 @@ with st.container():
     with col3:
         if st.button("🗑 ล้างข้อความ"):
             clear_keywords()
-            st.session_state.cbc_selected = False
-            st.session_state.cbc_subitems = []
 
     st.markdown("</div>", unsafe_allow_html=True)
+
+# ✅ Section: Vital signs, BMI, PE
+st.markdown(f"""
+    <div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; 
+                padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>
+        1. ผล Vital signs และการตรวจร่างกาย
+    </div>
+""", unsafe_allow_html=True)
+
+with st.expander("คลิกเพื่อเลือกข้อมูล", expanded=True):
+    with st.container():
+        col_vs, col_bmi, col_pe = st.columns(3)
+
+        with col_vs:
+            box_color = "#2c2c2c" if st.session_state.theme_mode == "dark" else "#ffffff"
+            st.markdown(f"""
+                <div style="background-color:{box_color}; border:1px solid #888; border-radius:8px; padding:10px;">
+                <strong>🔹 Vital signs</strong><br><br>
+            """, unsafe_allow_html=True)
+
+            st.button("BP สูง", on_click=lambda: add_keyword("Abnormal BP"))
+            st.button("ชีพจรเร็ว", on_click=lambda: add_keyword("Abnormal Pulse"))
+            st.button("ชีพจรช้า", on_click=lambda: add_keyword("Abnormal Pulse"))
+            st.button("อุณหภูมิร่างกายผิดปกติ", on_click=lambda: add_keyword("Abnormal Temperature"))
+            st.button("การหายใจผิดปกติ", on_click=lambda: add_keyword("Abnormal Respiration"))
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        with col_bmi:
+            box_color = "#2c2c2c" if st.session_state.theme_mode == "dark" else "#ffffff"
+            st.markdown(f"""
+                <div style="background-color:{box_color}; border:1px solid #888; border-radius:8px; padding:10px;">
+                <strong>🔹 BMI</strong><br><br>
+            """, unsafe_allow_html=True)
+
+            st.button("BMI ≥ 25", on_click=lambda: add_keyword("BMI ≥ 25"))
+            st.button("BMI ≥ 28", on_click=lambda: add_keyword("BMI ≥ 28"))
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        with col_pe:
+            box_color = "#2c2c2c" if st.session_state.theme_mode == "dark" else "#ffffff"
+            st.markdown(f"""
+                <div style="background-color:{box_color}; border:1px solid #888; border-radius:8px; padding:10px;">
+                <strong>🔹 การตรวจร่างกาย (PE)</strong><br><br>
+            """, unsafe_allow_html=True)
+
+            pe_input = st.text_input("พิมพ์ผลตรวจร่างกาย", placeholder="พิมพ์ภาษาไทยหรืออังกฤษ")
+
+            if st.button("➕ เพิ่ม PE"):
+                if pe_input.strip():
+                    keyword_pe = f"Abnormal PE ({pe_input.strip()})"
+                    if keyword_pe not in st.session_state.selected_keywords:
+                        st.session_state.selected_keywords.append(keyword_pe)
+
+            st.markdown("</div>", unsafe_allow_html=True)
 
 # ✅ Section 2: Lab results
 st.markdown(f"""
