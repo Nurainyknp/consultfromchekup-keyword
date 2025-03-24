@@ -17,34 +17,59 @@ def clear_keywords():
 # 💬 แสดงข้อความรวม
 combined_text = "; ".join(st.session_state.selected_keywords)
 
-# 🔘 Layout 3 ส่วน
-col1, col2, col3 = st.columns([2, 6, 1])
+# ================================
+# 🔘 ส่วนบน: ปุ่ม + ช่อง + ล้าง
+# ================================
+st.markdown("### 📝 ระบบช่วยเขียนข้อความ consult")
 
-# 🔘 ปุ่ม HTML ที่คัดลอกจริงๆ
+col1, col2, col3 = st.columns([2, 6, 2])
+
+# ✅ ปุ่มคัดลอกข้อความ (HTML + JS)
 with col1:
     components.html(
         f"""
-        <button onclick="navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!')" 
-                style="padding:0.5em 1em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;">
+        <button onclick="navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!');"
+                style="padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;">
             📋 คัดลอกข้อความ
         </button>
         """,
-        height=40,
+        height=45,
     )
 
-# ช่องแสดงข้อความ
+# ✅ ช่องแสดงข้อความ
 with col2:
     st.text_area("รวมคำ consult", value=combined_text, height=80)
 
-# ปุ่ม Clear
+# ✅ ปุ่มล้างข้อความ (HTML)
 with col3:
-    st.button("🗑 ล้างข้อความ", on_click=clear_keywords)
+    st.markdown(
+        """
+        <button onclick="window.location.reload();"
+                style="padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#f44336; color:white; border:none; cursor:pointer;">
+            🗑 ล้างข้อความ
+        </button>
+        """,
+        unsafe_allow_html=True,
+    )
 
+# ================================
 # 🔽 หัวข้อหลัก (Expander)
+# ================================
+
 with st.expander("1. ผล Vital sign และการตรวจร่างกาย"):
-    st.button("BP สูง", on_click=lambda: add_keyword("ความดันโลหิตสูง"))
-    st.button("หัวใจเต้นเร็ว", on_click=lambda: add_keyword("หัวใจเต้นเร็วกว่าปกติ"))
-    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.button("BP สูง", on_click=lambda: add_keyword("ความดันโลหิตสูง"))
+        st.button("HR เร็ว", on_click=lambda: add_keyword("หัวใจเต้นเร็ว")
+        )
+    with col2:
+        st.button("BMI สูง", on_click=lambda: add_keyword("ภาวะน้ำหนักเกิน"))
+
 with st.expander("2. สิ่งส่งตรวจห้องปฏิบัติการ"):
-    st.button("LDL สูง", on_click=lambda: add_keyword("ภาวะไขมันในเลือดผิดปกติ (LDL)"))
-    st.button("FBS สูง", on_click=lambda: add_keyword("ระดับน้ำตาลในเลือดสูง (FBS)"))
+    col1, col2 = st.columns(2)
+    with col1:
+        st.button("LDL สูง", on_click=lambda: add_keyword("ภาวะไขมันในเลือดผิดปกติ (LDL)"))
+        st.button("FBS สูง", on_click=lambda: add_keyword("ระดับน้ำตาลในเลือดสูง (FBS)"))
+    with col2:
+        st.button("HbA1c สูง", on_click=lambda: add_keyword("ภาวะเบาหวาน (HbA1c สูง)"))
+
