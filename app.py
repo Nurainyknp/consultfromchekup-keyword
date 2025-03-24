@@ -69,12 +69,12 @@ with st.expander("คลิกเพื่อเลือกข้อมูล",
         # 🔹 ฝั่งซ้าย: Vital Signs
         with col_vs:
             st.markdown("""
-                <div style="background-color:#ffffff; border:1px solid #ddd; border-radius:8px; padding:15px;">
+                <div style="background-color:#ffffff; border:1px solid #ddd; border-radius:8px; padding:10px;">
                 <strong>🔹 Vital signs</strong><br><br>
             """, unsafe_allow_html=True)
 
             # ปุ่มแถวบนแนวนอน
-            row1 = st.columns(3)
+            row1 = st.columns([1.2, 1.2, 1.1])
             with row1[0]:
                 st.button("BP สูง", on_click=lambda: add_keyword("Abnormal BP"))
             with row1[1]:
@@ -83,7 +83,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล",
                 st.button("ชีพจรช้า", on_click=lambda: add_keyword("Abnormal Pulse"))
 
             # ปุ่มแถวล่างแนวนอน
-            row2 = st.columns(2)
+            row2 = st.columns([1, 1])
             with row2[0]:
                 st.button("อุณหภูมิร่างกายผิดปกติ", on_click=lambda: add_keyword("Abnormal Temperature"))
             with row2[1]:
@@ -94,7 +94,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล",
         # 🔹 ฝั่งขวา: การตรวจร่างกาย (PE)
         with col_pe:
             st.markdown("""
-                <div style="background-color:#ffffff; border:1px solid #ddd; border-radius:8px; padding:15px;">
+                <div style="background-color:#ffffff; border:1px solid #ddd; border-radius:8px; padding:10px;">
                 <strong>🔹 การตรวจร่างกาย (PE)</strong><br><br>
             """, unsafe_allow_html=True)
 
