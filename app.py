@@ -110,6 +110,8 @@ def update_keywords():
         if st.session_state.get("chk_egfr"): kidney_items.append("eGFR")
         if kidney_items:
             selected.append("Abnormal kidney (" + ", ".join(kidney_items) + ")")
+        else:
+            selected.append("Abnormal kidney")
 
     # Thyroid Function
     if st.session_state.get("thyroid_main"):
@@ -119,10 +121,12 @@ def update_keywords():
         if st.session_state.get("chk_ft4"): thyroid_items.append("Free T4")
         if thyroid_items:
             selected.append("Abnormal thyroid (" + ", ".join(thyroid_items) + ")")
+        else:
+            selected.append("Abnormal thyroid")
 
     st.session_state.selected_keywords = selected
 
-# ✅ Clear
+# ✅ Clear Button
 
 def clear_keywords():
     for k in list(st.session_state.keys()):
@@ -130,6 +134,7 @@ def clear_keywords():
             st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
 
+# ✅ เรียกอัปเดตข้อความ
 update_keywords()
 combined_text = "; ".join(st.session_state.selected_keywords)
 
@@ -180,7 +185,6 @@ st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mod
 with st.expander("คลิกเพื่อเลือกข้อมูล (Lab results)", expanded=False):
     col_cbc, col_met, col_lft = st.columns(3)
 
-    # CBC
     with col_cbc:
         st.checkbox("ความสมบูรณ์ของเม็ดเลือด (CBC)", key="cbc_main", on_change=update_keywords)
         if st.session_state.get("cbc_main"):
@@ -193,7 +197,6 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("Lymphocytes", key="chk_lymph", on_change=update_keywords)
             st.checkbox("Eosinophils", key="chk_eos", on_change=update_keywords)
 
-    # Metabolic
     with col_met:
         st.markdown("🔹 Metabolic")
         st.checkbox("Glucose (Fasting/Non-Fasting)", key="chk_glu", on_change=update_keywords)
@@ -206,7 +209,6 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
         st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
         st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
 
-    # Liver
     with col_lft:
         st.checkbox("การทำงานของตับ (Liver function test)", key="lft_main", on_change=update_keywords)
         if st.session_state.get("lft_main"):
