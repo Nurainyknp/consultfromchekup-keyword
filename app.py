@@ -139,11 +139,11 @@ def clear_keywords():
             st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
 
-# ✅ เรียกอัปเดตข้อความ
+# ✅ Generate consult text
 update_keywords()
 combined_text = "; ".join(st.session_state.selected_keywords)
 
-# ✅ กล่องแสดงผล + ปุ่มคัดลอก / ล้าง
+# ✅ Display consult + buttons
 bg_color = "#333" if st.session_state.theme_mode == "dark" else "#f0f2f6"
 st.markdown(f"<div style='background-color:{bg_color}; padding:15px; border-radius:10px; margin-bottom:20px;'>"
             "<h3>📝 ระบบช่วยเขียนข้อความ consult</h3>", unsafe_allow_html=True)
@@ -164,7 +164,7 @@ with c3:
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ✅ หัวข้อ 1: Vital Signs & BMI & PE
+# ✅ Section 1: Vital Signs & PE
 st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>1. ผล Vital signs และการตรวจร่างกาย</div>", unsafe_allow_html=True)
 
 with st.expander("คลิกเพื่อเลือกข้อมูล (Vital signs และ PE)", expanded=False):
@@ -184,11 +184,11 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     with col_pe:
         st.text_input("พิมพ์ผลตรวจร่างกาย", key="pe_input", on_change=update_keywords)
 
-# ✅ หัวข้อ 2: Lab results
+# ✅ Section 2: Lab Results
 st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>2. ผลการตรวจทางห้องปฏิบัติการ</div>", unsafe_allow_html=True)
 
 with st.expander("คลิกเพื่อเลือกข้อมูล (Lab results)", expanded=False):
-    col_cbc, col_met, col_lft = st.columns(3)
+    col_cbc, col_dummy1, col_lft = st.columns(3)
 
     with col_cbc:
         st.checkbox("ความสมบูรณ์ของเม็ดเลือด (CBC)", key="cbc_main", on_change=update_keywords)
@@ -202,17 +202,17 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("Lymphocytes", key="chk_lymph", on_change=update_keywords)
             st.checkbox("Eosinophils", key="chk_eos", on_change=update_keywords)
 
-    with col_met:
-        st.markdown("🔹 Metabolic")
-        st.checkbox("Glucose (Fasting/Non-Fasting)", key="chk_glu", on_change=update_keywords)
-        st.checkbox("HbA1C", key="chk_hba1c", on_change=update_keywords)
-        st.checkbox("Total Cholesterol", key="chk_tc", on_change=update_keywords)
-        st.checkbox("Triglyceride", key="chk_trig", on_change=update_keywords)
-        st.checkbox("HDL-C", key="chk_hdl", on_change=update_keywords)
-        st.checkbox("LDL-C", key="chk_ldl", on_change=update_keywords)
-        st.checkbox("Uric Acid", key="chk_uric", on_change=update_keywords)
-        st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
-        st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
+    with col_dummy1:
+        with st.expander("🔹 Metabolic"):
+            st.checkbox("Glucose (Fasting/Non-Fasting)", key="chk_glu", on_change=update_keywords)
+            st.checkbox("HbA1C", key="chk_hba1c", on_change=update_keywords)
+            st.checkbox("Total Cholesterol", key="chk_tc", on_change=update_keywords)
+            st.checkbox("Triglyceride", key="chk_trig", on_change=update_keywords)
+            st.checkbox("HDL-C", key="chk_hdl", on_change=update_keywords)
+            st.checkbox("LDL-C", key="chk_ldl", on_change=update_keywords)
+            st.checkbox("Uric Acid", key="chk_uric", on_change=update_keywords)
+            st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
+            st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
 
     with col_lft:
         st.checkbox("การทำงานของตับ (Liver function test)", key="lft_main", on_change=update_keywords)
@@ -239,8 +239,8 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("Free T4", key="chk_ft4", on_change=update_keywords)
 
     with col_tumor:
-        st.markdown("🔹 สารบ่งชี้มะเร็ง (Tumor markers)")
-        st.checkbox("AFP", key="chk_afp", on_change=update_keywords)
-        st.checkbox("CA-125", key="chk_ca125", on_change=update_keywords)
-        st.checkbox("CA 19-9", key="chk_ca199", on_change=update_keywords)
-        st.checkbox("PSA", key="chk_psa", on_change=update_keywords)
+        with st.expander("🔹 สารบ่งชี้มะเร็ง (Tumor markers)"):
+            st.checkbox("AFP", key="chk_afp", on_change=update_keywords)
+            st.checkbox("CA-125", key="chk_ca125", on_change=update_keywords)
+            st.checkbox("CA 19-9", key="chk_ca199", on_change=update_keywords)
+            st.checkbox("PSA", key="chk_psa", on_change=update_keywords)
