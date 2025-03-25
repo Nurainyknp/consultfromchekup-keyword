@@ -9,69 +9,59 @@ if "theme_mode" not in st.session_state:
 if "selected_keywords" not in st.session_state:
     st.session_state.selected_keywords = []
 
-# ✅ Theme toggle button (top right)
-col_theme_left, col_theme_spacer, col_theme_right = st.columns([10, 1, 2])
-with col_theme_right:
-    selected = st.radio("โหมด", ["🌞 Light", "🌙 Night"], horizontal=True, label_visibility="collapsed")
-    st.session_state.theme_mode = "dark" if "Night" in selected else "light"
+# ✅ Theme toggle button
+col1, col2, col3 = st.columns([10, 1, 2])
+with col3:
+    theme = st.radio("โหมด", ["🌞 Light", "🌙 Night"], horizontal=True, label_visibility="collapsed")
+    st.session_state.theme_mode = "dark" if "Night" in theme else "light"
 
-# ✅ Custom CSS per theme
+# ✅ Custom CSS
 if st.session_state.theme_mode == "dark":
     custom_css = """
         <style>
-            body, .block-container {
-                background-color: #1e1e1e !important;
-                color: white !important;
-            }
-            .stTextArea textarea, .stTextInput input {
-                background-color: #2c2c2c !important;
-                color: white !important;
-            }
-            .stButton > button {
-                background-color: #444 !important;
-                color: white !important;
-            }
-            .stRadio > div {
-                color: white !important;
-            }
+        body, .block-container {
+            background-color: #1e1e1e !important;
+            color: white !important;
+        }
+        .stTextArea textarea, .stTextInput input {
+            background-color: #2c2c2c !important;
+            color: white !important;
+        }
+        .stButton > button {
+            background-color: #444 !important;
+            color: white !important;
+        }
+        .stRadio > div {
+            color: white !important;
+        }
         </style>
     """
-else:
-    custom_css = ""
+    st.markdown(custom_css, unsafe_allow_html=True)
 
-st.markdown(custom_css, unsafe_allow_html=True)
-
-# ✅ Function: update consult keywords
+# ✅ Update Keywords
 def update_keywords():
     selected = []
 
     # Vital signs
-    if st.session_state.get("chk_bp"):
-        selected.append("Abnormal BP")
+    if st.session_state.get("chk_bp"): selected.append("Abnormal BP")
     if st.session_state.get("chk_pulse_fast") or st.session_state.get("chk_pulse_slow"):
         selected.append("Abnormal Pulse")
-    if st.session_state.get("chk_temp"):
-        selected.append("Abnormal Temperature")
-    if st.session_state.get("chk_resp"):
-        selected.append("Abnormal Respiration")
+    if st.session_state.get("chk_temp"): selected.append("Abnormal Temperature")
+    if st.session_state.get("chk_resp"): selected.append("Abnormal Respiration")
 
     # BMI
-    if st.session_state.get("chk_bmi_25"):
-        selected.append("BMI ≥ 25")
-    if st.session_state.get("chk_bmi_28"):
-        selected.append("BMI ≥ 28")
+    if st.session_state.get("chk_bmi_25"): selected.append("BMI ≥ 25")
+    if st.session_state.get("chk_bmi_28"): selected.append("BMI ≥ 28")
 
     # CBC
     if st.session_state.get("cbc_main"):
         cbc_items = []
-        if st.session_state.get("chk_hb"): cbc_items.append("Hb")
-        if st.session_state.get("chk_hct"): cbc_items.append("Hct")
-        if st.session_state.get("chk_rbc"): cbc_items.append("RBC")
-        if st.session_state.get("chk_wbc"): cbc_items.append("WBC")
-        if st.session_state.get("chk_plt"): cbc_items.append("PLT")
-        if st.session_state.get("chk_neutro"): cbc_items.append("Neutrophils")
-        if st.session_state.get("chk_lymph"): cbc_items.append("Lymphocytes")
-        if st.session_state.get("chk_eos"): cbc_items.append("Eosinophils")
+        for k, label in {
+            "chk_hb": "Hb", "chk_hct": "Hct", "chk_rbc": "RBC", "chk_wbc": "WBC",
+            "chk_plt": "PLT", "chk_neutro": "Neutrophils", "chk_lymph": "Lymphocytes",
+            "chk_eos": "Eosinophils"
+        }.items():
+            if st.session_state.get(k): cbc_items.append(label)
         if cbc_items:
             selected.append("Abnormal CBC (" + ", ".join(cbc_items) + ")")
 
@@ -91,13 +81,22 @@ def update_keywords():
     if lipid_items:
         selected.append("Abnormal Lipid (" + ", ".join(lipid_items) + ")")
 
-    # Metabolic (Uric, Urine, Microalbumin)
-    if st.session_state.get("chk_uric"):
-        selected.append("Abnormal Uric")
-    if st.session_state.get("chk_urinecre"):
-        selected.append("Abnormal Urine cre.")
-    if st.session_state.get("chk_microalb"):
-        selected.append("Abnormal Microalbumin")
+    # Metabolic
+    if st.session_state.get("chk_uric"): selected.append("Abnormal Uric")
+    if st.session_state.get("chk_urinecre"): selected.append("Abnormal Urine cre.")
+    if st.session_state.get("chk_microalb"): selected.append("Abnormal Microalbumin")
+
+    # LFT
+    if st.session_state.get("lft_main"):
+        lft_items = []
+        for k, label in {
+            "chk_ast": "AST", "chk_alt": "ALT", "chk_alp": "ALP", "chk_ggt": "GGT"
+        }.items():
+            if st.session_state.get(k): lft_items.append(label)
+        if lft_items:
+            selected.append("Abnormal LFT (" + ", ".join(lft_items) + ")")
+        else:
+            selected.append("Abnormal LFT")
 
     # PE
     if st.session_state.get("pe_input"):
@@ -105,41 +104,41 @@ def update_keywords():
 
     st.session_state.selected_keywords = selected
 
-# ✅ Clear all
+# ✅ Clear
 def clear_keywords():
+    for k in list(st.session_state.keys()):
+        if k.startswith("chk_") or k in ["cbc_main", "pe_input", "lft_main"]:
+            st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
-    for key in list(st.session_state.keys()):
-        if key.startswith("chk_") or key in ["cbc_main", "pe_input"]:
-            st.session_state[key] = False if key.startswith("chk_") or key == "cbc_main" else ""
-# ✅ แสดง consult keyword box
+# ✅ เรียกอัปเดตข้อความ
 update_keywords()
 combined_text = "; ".join(st.session_state.selected_keywords)
 
-with st.container():
-    bg_color = "#333" if st.session_state.theme_mode == "dark" else "#f0f2f6"
-    st.markdown(f"<div style='background-color:{bg_color}; padding:15px; border-radius:10px; margin-bottom:20px;'>"
-                "<h3 style='margin-top:0;'>📝 ระบบช่วยเขียนข้อความ consult</h3>", unsafe_allow_html=True)
+# ✅ กล่องแสดงผล + ปุ่มคัดลอก / ล้าง
+bg_color = "#333" if st.session_state.theme_mode == "dark" else "#f0f2f6"
+st.markdown(f"<div style='background-color:{bg_color}; padding:15px; border-radius:10px; margin-bottom:20px;'>"
+            "<h3>📝 ระบบช่วยเขียนข้อความ consult</h3>", unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns([2, 6, 2])
-    with col1:
-        components.html(
-            f"<button onclick=\"navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!');\""
-            "style=\"padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;\">"
-            "📋 คัดลอกข้อความ</button>",
-            height=60,
-        )
-    with col2:
-        st.text_area("รวมคำ consult", value=combined_text, height=80)
-    with col3:
-        if st.button("🗑 ล้างข้อความ"):
-            clear_keywords()
+c1, c2, c3 = st.columns([2, 6, 2])
+with c1:
+    components.html(
+        f"<button onclick=\"navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!');\""
+        "style=\"padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;\">"
+        "📋 คัดลอกข้อความ</button>",
+        height=60,
+    )
+with c2:
+    st.text_area("รวมคำ consult", value=combined_text, height=80)
+with c3:
+    if st.button("🗑 ล้างข้อความ"):
+        clear_keywords()
 
-    st.markdown("</div>", unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
 
-# ✅ หัวข้อ 1: Vital signs, BMI, PE
+# ✅ หัวข้อ 1: Vital Signs & BMI & PE (collapsed by default)
 st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>1. ผล Vital signs และการตรวจร่างกาย</div>", unsafe_allow_html=True)
 
-with st.expander("คลิกเพื่อเลือกข้อมูล (Vital signs และ PE)", expanded=True):
+with st.expander("คลิกเพื่อเลือกข้อมูล (Vital signs และ PE)", expanded=False):
     col_vs, col_bmi, col_pe = st.columns(3)
 
     with col_vs:
@@ -158,8 +157,8 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
 # ✅ หัวข้อ 2: Lab results
 st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>2. ผลการตรวจทางห้องปฏิบัติการ</div>", unsafe_allow_html=True)
 
-with st.expander("คลิกเพื่อเลือกข้อมูล (Lab results)", expanded=True):
-    col_cbc, col_met, col_liver = st.columns(3)
+with st.expander("คลิกเพื่อเลือกข้อมูล (Lab results)", expanded=False):
+    col_cbc, col_met, col_lft = st.columns(3)
 
     # 🔹 CBC
     with col_cbc:
@@ -187,21 +186,29 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
         st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
         st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
 
-    # 🔹 Liver Function (placeholder)
-    with col_liver:
-        st.markdown("🔹 การทำงานของตับ (Liver function test)")
-    # 🔹 กลุ่มล่าง: Kidney / Thyroid / Tumor
+    # 🔹 Liver Function Test (LFT)
+    with col_lft:
+        lft_checked = st.checkbox("การทำงานของตับ (Liver function test)", key="lft_main", on_change=update_keywords)
+        if lft_checked:
+            st.checkbox("AST (SGOT)", key="chk_ast", on_change=update_keywords)
+            st.checkbox("ALT (SGPT)", key="chk_alt", on_change=update_keywords)
+            st.checkbox("ALP", key="chk_alp", on_change=update_keywords)
+            st.checkbox("GGT", key="chk_ggt", on_change=update_keywords)
+    # 🔹 แถวล่างของหัวข้อ 2
     col_kidney, col_thyroid, col_tumor = st.columns(3)
 
     with col_kidney:
         st.markdown("🔹 การทำงานของไตและเกลือแร่")
         # เพิ่มกล่องติ๊กในอนาคต เช่น:
         # st.checkbox("Creatinine", key="chk_creatinine", on_change=update_keywords)
+        # st.checkbox("BUN", key="chk_bun", on_change=update_keywords)
 
     with col_thyroid:
         st.markdown("🔹 การทำงานของต่อมไทรอยด์")
         # st.checkbox("TSH", key="chk_tsh", on_change=update_keywords)
+        # st.checkbox("Free T4", key="chk_ft4", on_change=update_keywords)
 
     with col_tumor:
         st.markdown("🔹 สารบ่งชี้มะเร็ง (Tumor markers)")
         # st.checkbox("CEA", key="chk_cea", on_change=update_keywords)
+        # st.checkbox("AFP", key="chk_afp", on_change=update_keywords)
