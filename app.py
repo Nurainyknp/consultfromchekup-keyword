@@ -102,7 +102,7 @@ def update_keywords():
     if st.session_state.get("pe_input"):
         selected.append(f"Abnormal PE ({st.session_state.pe_input})")
 
-    # Kidney Function
+    # Kidney
     if st.session_state.get("kidney_main"):
         kidney_items = []
         if st.session_state.get("chk_bun"): kidney_items.append("BUN")
@@ -113,7 +113,7 @@ def update_keywords():
         else:
             selected.append("Abnormal kidney")
 
-    # Thyroid Function
+    # Thyroid
     if st.session_state.get("thyroid_main"):
         thyroid_items = []
         if st.session_state.get("chk_tsh"): thyroid_items.append("TSH")
@@ -130,12 +130,33 @@ def update_keywords():
     if st.session_state.get("chk_ca199"): selected.append("Abnormal CA 19-9")
     if st.session_state.get("chk_psa"): selected.append("Abnormal PSA")
 
+    # UA
+    if st.session_state.get("ua_main"):
+        ua_items = []
+        if st.session_state.get("chk_ua_wbc"): ua_items.append("WBC")
+        if st.session_state.get("chk_ua_rbc"): ua_items.append("RBC")
+        if st.session_state.get("chk_ua_protein"): ua_items.append("Protein")
+        if st.session_state.get("chk_ua_glucose"): ua_items.append("Glucose")
+        if ua_items:
+            selected.append("Abnormal UA (" + ", ".join(ua_items) + ")")
+        else:
+            selected.append("Abnormal UA")
+
+    # Vitamin D
+    if st.session_state.get("chk_vitd"): selected.append("Abnormal vit D")
+
+    # Stool
+    if st.session_state.get("chk_stool"): selected.append("Abnormal Stool")
+
+    # Pap smear
+    if st.session_state.get("chk_pap"): selected.append("Abnormal Pap smear")
+
     st.session_state.selected_keywords = selected
 
 # ✅ Clear Button
 def clear_keywords():
     for k in list(st.session_state.keys()):
-        if k.startswith("chk_") or k in ["cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main"]:
+        if k.startswith("chk_") or k in ["cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main", "ua_main"]:
             st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
 
@@ -222,7 +243,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("ALP", key="chk_alp", on_change=update_keywords)
             st.checkbox("GGT", key="chk_ggt", on_change=update_keywords)
 
-    col_kidney, col_thyroid, col_tumor = st.columns(3)
+    col_kidney, col_thyroid, col_other = st.columns(3)
 
     with col_kidney:
         st.checkbox("การทำงานของไต (Kidney function test)", key="kidney_main", on_change=update_keywords)
@@ -231,6 +252,13 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("Creatinine", key="chk_creatinine", on_change=update_keywords)
             st.checkbox("eGFR", key="chk_egfr", on_change=update_keywords)
 
+        st.checkbox("การตรวจปัสสาวะ (Urinalysis: UA)", key="ua_main", on_change=update_keywords)
+        if st.session_state.get("ua_main"):
+            st.checkbox("White blood cell (WBC)", key="chk_ua_wbc", on_change=update_keywords)
+            st.checkbox("Red blood cell (RBC)", key="chk_ua_rbc", on_change=update_keywords)
+            st.checkbox("Protein", key="chk_ua_protein", on_change=update_keywords)
+            st.checkbox("Glucose", key="chk_ua_glucose", on_change=update_keywords)
+
     with col_thyroid:
         st.checkbox("การทำงานของต่อมไทรอยด์ (Thyroid function test)", key="thyroid_main", on_change=update_keywords)
         if st.session_state.get("thyroid_main"):
@@ -238,9 +266,14 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("Free T3", key="chk_ft3", on_change=update_keywords)
             st.checkbox("Free T4", key="chk_ft4", on_change=update_keywords)
 
-    with col_tumor:
+        st.checkbox("วิตามินดี (Vitamin D total)", key="chk_vitd", on_change=update_keywords)
+
+    with col_other:
         st.markdown("🔹 สารบ่งชี้มะเร็ง (Tumor markers)")
         st.checkbox("AFP", key="chk_afp", on_change=update_keywords)
         st.checkbox("CA-125", key="chk_ca125", on_change=update_keywords)
         st.checkbox("CA 19-9", key="chk_ca199", on_change=update_keywords)
         st.checkbox("PSA", key="chk_psa", on_change=update_keywords)
+
+        st.checkbox("การตรวจอุจจาระ", key="chk_stool", on_change=update_keywords)
+        st.checkbox("Pap smear", key="chk_pap", on_change=update_keywords)
