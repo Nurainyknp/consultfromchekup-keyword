@@ -51,7 +51,7 @@ def update_keywords():
 
     # BMI
     if st.session_state.get("chk_bmi_25"): selected.append("BMI ≥ 25")
-    if st.session_state.get("chk_bmi_28"): selected.append("BMI ≥ 28")
+    if st.session_state.get("chk_bmi_28"): selected.append("BMI ≥ 27")
 
     # CBC
     if st.session_state.get("cbc_main"):
