@@ -37,14 +37,15 @@ if st.session_state.theme_mode == "dark":
         </style>
     """
 else:
-    custom_css = ""  # Light mode uses Streamlit default appearance
+    custom_css = ""
 
 st.markdown(custom_css, unsafe_allow_html=True)
 
-# ✅ Function: update consult keyword list
+# ✅ Function: update consult keywords
 def update_keywords():
     selected = []
-    # 🔹 Vital signs
+
+    # Vital signs
     if st.session_state.get("chk_bp"):
         selected.append("Abnormal BP")
     if st.session_state.get("chk_pulse_fast") or st.session_state.get("chk_pulse_slow"):
@@ -54,13 +55,13 @@ def update_keywords():
     if st.session_state.get("chk_resp"):
         selected.append("Abnormal Respiration")
 
-    # 🔹 BMI
+    # BMI
     if st.session_state.get("chk_bmi_25"):
         selected.append("BMI ≥ 25")
     if st.session_state.get("chk_bmi_28"):
         selected.append("BMI ≥ 28")
 
-    # 🔹 CBC
+    # CBC
     if st.session_state.get("cbc_main"):
         cbc_items = []
         if st.session_state.get("chk_hb"): cbc_items.append("Hb")
@@ -74,14 +75,14 @@ def update_keywords():
         if cbc_items:
             selected.append("Abnormal CBC (" + ", ".join(cbc_items) + ")")
 
-    # 🔹 Sugar
+    # Sugar
     sugar_items = []
     if st.session_state.get("chk_glu"): sugar_items.append("Glucose")
     if st.session_state.get("chk_hba1c"): sugar_items.append("HbA1C")
     if sugar_items:
         selected.append("Abnormal Sugar (" + ", ".join(sugar_items) + ")")
 
-    # 🔹 Lipid
+    # Lipid
     lipid_items = []
     if st.session_state.get("chk_tc"): lipid_items.append("TC")
     if st.session_state.get("chk_trig"): lipid_items.append("Trig")
@@ -90,59 +91,53 @@ def update_keywords():
     if lipid_items:
         selected.append("Abnormal Lipid (" + ", ".join(lipid_items) + ")")
 
-    # 🔹 PE
+    # Metabolic (Uric, Urine, Microalbumin)
+    if st.session_state.get("chk_uric"):
+        selected.append("Abnormal Uric")
+    if st.session_state.get("chk_urinecre"):
+        selected.append("Abnormal Urine cre.")
+    if st.session_state.get("chk_microalb"):
+        selected.append("Abnormal Microalbumin")
+
+    # PE
     if st.session_state.get("pe_input"):
         selected.append(f"Abnormal PE ({st.session_state.pe_input})")
 
     st.session_state.selected_keywords = selected
 
-# ✅ Clear function
+# ✅ Clear all
 def clear_keywords():
     st.session_state.selected_keywords = []
     for key in list(st.session_state.keys()):
         if key.startswith("chk_") or key in ["cbc_main", "pe_input"]:
             st.session_state[key] = False if key.startswith("chk_") or key == "cbc_main" else ""
-# ✅ เรียกฟังก์ชันอัปเดตคำ consult ก่อนแสดง
+# ✅ แสดง consult keyword box
 update_keywords()
 combined_text = "; ".join(st.session_state.selected_keywords)
 
-# ✅ กล่องคัดลอกข้อความ
 with st.container():
     bg_color = "#333" if st.session_state.theme_mode == "dark" else "#f0f2f6"
-    st.markdown(f"""
-        <div style="background-color:{bg_color}; padding:15px; border-radius:10px; margin-bottom:20px;">
-            <h3 style="margin-top:0;">📝 ระบบช่วยเขียนข้อความ consult</h3>
-    """, unsafe_allow_html=True)
+    st.markdown(f"<div style='background-color:{bg_color}; padding:15px; border-radius:10px; margin-bottom:20px;'>"
+                "<h3 style='margin-top:0;'>📝 ระบบช่วยเขียนข้อความ consult</h3>", unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([2, 6, 2])
-
     with col1:
         components.html(
-            f"""
-            <button onclick=\"navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!');\"
-                    style=\"padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;\">
-                📋 คัดลอกข้อความ
-            </button>
-            """,
+            f"<button onclick=\"navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!');\""
+            "style=\"padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;\">"
+            "📋 คัดลอกข้อความ</button>",
             height=60,
         )
-
     with col2:
         st.text_area("รวมคำ consult", value=combined_text, height=80)
-
     with col3:
         if st.button("🗑 ล้างข้อความ"):
             clear_keywords()
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ✅ หัวข้อ 1: Vital Signs, BMI, PE
-st.markdown(f"""
-    <div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; 
-                padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>
-        1. ผล Vital signs และการตรวจร่างกาย
-    </div>
-""", unsafe_allow_html=True)
+# ✅ หัวข้อ 1: Vital signs, BMI, PE
+st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>1. ผล Vital signs และการตรวจร่างกาย</div>", unsafe_allow_html=True)
 
 with st.expander("คลิกเพื่อเลือกข้อมูล (Vital signs และ PE)", expanded=True):
     col_vs, col_bmi, col_pe = st.columns(3)
@@ -161,17 +156,12 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     with col_pe:
         st.text_input("พิมพ์ผลตรวจร่างกาย", key="pe_input", on_change=update_keywords)
 # ✅ หัวข้อ 2: Lab results
-st.markdown(f"""
-    <div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; 
-                padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>
-        2. ผลการตรวจทางห้องปฏิบัติการ
-    </div>
-""", unsafe_allow_html=True)
+st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>2. ผลการตรวจทางห้องปฏิบัติการ</div>", unsafe_allow_html=True)
 
 with st.expander("คลิกเพื่อเลือกข้อมูล (Lab results)", expanded=True):
     col_cbc, col_met, col_liver = st.columns(3)
 
-    # 🔹 ความสมบูรณ์ของเม็ดเลือด (CBC)
+    # 🔹 CBC
     with col_cbc:
         st.checkbox("ความสมบูรณ์ของเม็ดเลือด (CBC)", key="cbc_main", on_change=update_keywords)
         if st.session_state.get("cbc_main"):
@@ -193,16 +183,19 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
         st.checkbox("Triglyceride", key="chk_trig", on_change=update_keywords)
         st.checkbox("HDL-C", key="chk_hdl", on_change=update_keywords)
         st.checkbox("LDL-C", key="chk_ldl", on_change=update_keywords)
+        st.checkbox("Uric Acid", key="chk_uric", on_change=update_keywords)
+        st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
+        st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
 
-    # 🔹 Liver Function (เตรียมไว้)
+    # 🔹 Liver Function (placeholder)
     with col_liver:
         st.markdown("🔹 การทำงานของตับ (Liver function test)")
-    # 🔹 แถวล่าง: Kidney / Thyroid / Tumor
+    # 🔹 กลุ่มล่าง: Kidney / Thyroid / Tumor
     col_kidney, col_thyroid, col_tumor = st.columns(3)
 
     with col_kidney:
         st.markdown("🔹 การทำงานของไตและเกลือแร่")
-        # เพิ่มกล่องติ๊กได้ในอนาคต เช่น:
+        # เพิ่มกล่องติ๊กในอนาคต เช่น:
         # st.checkbox("Creatinine", key="chk_creatinine", on_change=update_keywords)
 
     with col_thyroid:
