@@ -124,10 +124,15 @@ def update_keywords():
         else:
             selected.append("Abnormal thyroid")
 
+    # Tumor markers
+    if st.session_state.get("chk_afp"): selected.append("Abnormal AFP")
+    if st.session_state.get("chk_ca125"): selected.append("Abnormal CA-125")
+    if st.session_state.get("chk_ca199"): selected.append("Abnormal CA 19-9")
+    if st.session_state.get("chk_psa"): selected.append("Abnormal PSA")
+
     st.session_state.selected_keywords = selected
 
 # ✅ Clear Button
-
 def clear_keywords():
     for k in list(st.session_state.keys()):
         if k.startswith("chk_") or k in ["cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main"]:
@@ -235,3 +240,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
 
     with col_tumor:
         st.markdown("🔹 สารบ่งชี้มะเร็ง (Tumor markers)")
+        st.checkbox("AFP", key="chk_afp", on_change=update_keywords)
+        st.checkbox("CA-125", key="chk_ca125", on_change=update_keywords)
+        st.checkbox("CA 19-9", key="chk_ca199", on_change=update_keywords)
+        st.checkbox("PSA", key="chk_psa", on_change=update_keywords)
