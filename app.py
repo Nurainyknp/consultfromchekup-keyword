@@ -9,11 +9,11 @@ if "theme_mode" not in st.session_state:
 if "selected_keywords" not in st.session_state:
     st.session_state.selected_keywords = []
 
-# ✅ Theme toggle button
+# ✅ Theme toggle button (Safe Unicode / Compatible)
 col1, col2, col3 = st.columns([10, 1, 2])
 with col3:
-    theme = st.radio("\u0e42\u0e2b\u0e21\u0e14", ["\ud83c\udf1e Light", "\ud83c\udf19 Night"], horizontal=True, label_visibility="collapsed")
-    st.session_state.theme_mode = "dark" if "Night" in theme else "light"
+    theme = st.radio("เลือกโหมดธีม", ["Light", "Dark"], horizontal=True)
+    st.session_state.theme_mode = "dark" if theme == "Dark" else "light"
 
 # ✅ Custom CSS
 if st.session_state.theme_mode == "dark":
@@ -37,7 +37,6 @@ if st.session_state.theme_mode == "dark":
         </style>
     """
     st.markdown(custom_css, unsafe_allow_html=True)
-
 # ✅ Update Keywords
 def update_keywords():
     selected = []
