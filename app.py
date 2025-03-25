@@ -83,6 +83,31 @@ def update_keywords():
         if cbc_items:
             cbc_text += " (" + ", ".join(cbc_items) + ")"
         selected.append(cbc_text)
+
+    # ✅ Abnormal Sugar
+    sugar_items = []
+    if st.session_state.get("chk_glu"):
+        sugar_items.append("Glucose")
+    if st.session_state.get("chk_hba1c"):
+        sugar_items.append("HbA1C")
+    if sugar_items:
+        sugar_text = "Abnormal Sugar (" + ", ".join(sugar_items) + ")"
+        selected.append(sugar_text)
+
+    # ✅ Abnormal Lipid
+    lipid_items = []
+    if st.session_state.get("chk_tc"):
+        lipid_items.append("TC")
+    if st.session_state.get("chk_trig"):
+        lipid_items.append("Trig")
+    if st.session_state.get("chk_hdl"):
+        lipid_items.append("HDL")
+    if st.session_state.get("chk_ldl"):
+        lipid_items.append("LDL-C")
+    if lipid_items:
+        lipid_text = "Abnormal Lipid (" + ", ".join(lipid_items) + ")"
+        selected.append(lipid_text)
+
     if st.session_state.get("pe_input"):
         selected.append(f"Abnormal PE ({st.session_state.pe_input})")
     st.session_state.selected_keywords = selected
@@ -111,8 +136,8 @@ with st.container():
     with col1:
         components.html(
             f"""
-            <button onclick=\"navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!');\"
-                    style=\"padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;\">
+            <button onclick="navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!');"
+                    style="padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;">
                 📋 คัดลอกข้อความ
             </button>
             """,
@@ -139,22 +164,19 @@ st.markdown(f"""
 with st.expander("คลิกเพื่อเลือกข้อมูล", expanded=True):
     with st.container():
         col_vs, col_bmi, col_pe = st.columns(3)
-
         with col_vs:
             st.checkbox("BP สูง", key="chk_bp", on_change=update_keywords)
             st.checkbox("ชีพจรเร็ว", key="chk_pulse_fast", on_change=update_keywords)
             st.checkbox("ชีพจรช้า", key="chk_pulse_slow", on_change=update_keywords)
             st.checkbox("อุณหภูมิร่างกายผิดปกติ", key="chk_temp", on_change=update_keywords)
             st.checkbox("การหายใจผิดปกติ", key="chk_resp", on_change=update_keywords)
-
         with col_bmi:
             st.checkbox("BMI ≥ 25", key="chk_bmi_25", on_change=update_keywords)
-            st.checkbox("BMI ≥ 27", key="chk_bmi_28", on_change=update_keywords)
-
+            st.checkbox("BMI ≥ 28", key="chk_bmi_28", on_change=update_keywords)
         with col_pe:
             st.text_input("พิมพ์ผลตรวจร่างกาย", key="pe_input", on_change=update_keywords)
 
-# ✅ Section 2: Lab results
+# ✅ Section: Lab results
 st.markdown(f"""
     <div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; 
                 padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>
@@ -176,9 +198,14 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
                 st.checkbox("Neutrophil", key="chk_neutro", on_change=update_keywords)
                 st.checkbox("Lymphocytes", key="chk_lymph", on_change=update_keywords)
                 st.checkbox("Eosinophils", key="chk_eos", on_change=update_keywords)
-
         with col_met:
             st.markdown("🔹 Metabolic")
+            st.checkbox("Glucose (Fasting/Non-Fasting)", key="chk_glu", on_change=update_keywords)
+            st.checkbox("HbA1C", key="chk_hba1c", on_change=update_keywords)
+            st.checkbox("Total Cholesterol", key="chk_tc", on_change=update_keywords)
+            st.checkbox("Triglyceride", key="chk_trig", on_change=update_keywords)
+            st.checkbox("HDL-C", key="chk_hdl", on_change=update_keywords)
+            st.checkbox("LDL-C", key="chk_ldl", on_change=update_keywords)
         with col_liver:
             st.markdown("🔹 การทำงานของตับ (Liver function test)")
 
