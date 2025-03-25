@@ -209,31 +209,16 @@ def update_keywords():
 
     st.session_state.selected_keywords = selected
 
-# ✅ Clear Button: รีเซ็ต checkbox และ text input ทั้งหมด พร้อม refresh หน้าเว็บ
+# ✅ Clear Button
 def clear_keywords():
-    keys_to_clear = [
-        "chk_bp", "chk_pulse_fast", "chk_pulse_slow", "chk_temp", "chk_resp",
-        "chk_bmi_25", "chk_bmi_28",
-        "cbc_main", "chk_hb", "chk_hct", "chk_rbc", "chk_wbc", "chk_plt", "chk_neutro", "chk_lymph", "chk_eos",
-        "chk_glu", "chk_hba1c", "chk_tc", "chk_trig", "chk_hdl", "chk_ldl",
-        "chk_uric", "chk_urinecre", "chk_microalb",
-        "lft_main", "chk_ast", "chk_alt", "chk_alp", "chk_ggt",
-        "pe_input", "kidney_main", "chk_bun", "chk_creatinine", "chk_egfr",
-        "ua_main", "chk_ua_wbc", "chk_ua_rbc", "chk_ua_protein", "chk_ua_glucose",
-        "thyroid_main", "chk_tsh", "chk_ft3", "chk_ft4", "chk_vitd",
-        "chk_afp", "chk_ca125", "chk_ca199", "chk_psa", "chk_stool", "chk_pap",
-        "chk_cxr", "txt_cxr", "chk_us", "txt_us",
-        "chk_mammo", "chk_birads3", "chk_birads4a", "chk_birads4b", "chk_birads4c", "chk_birads5",
-        "chk_12lead", "txt_12lead", "chk_est", "txt_est", "chk_other_investigation", "txt_other_investigation",
-        "chk_consult", "txt_consult"
-    ]
-    for key in keys_to_clear:
-        if key.startswith("chk_"):
-            st.session_state[key] = False
-        else:
-            st.session_state[key] = ""
+    for k in list(st.session_state.keys()):
+        if k.startswith("chk_") or k in [
+            "cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main",
+            "ua_main", "txt_cxr", "txt_us",
+            "txt_12lead", "txt_est", "txt_other_investigation", "txt_consult"
+        ]:
+            st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
-    st.experimental_rerun()
 
 # ✅ Show result box
 update_keywords()
