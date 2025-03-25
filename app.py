@@ -12,7 +12,7 @@ if "selected_keywords" not in st.session_state:
 # ✅ Theme toggle button
 col1, col2, col3 = st.columns([10, 1, 2])
 with col3:
-    theme = st.radio("โหมด", ["🌞 Light", "🌙 Night"], horizontal=True, label_visibility="collapsed")
+    theme = st.radio("\u0e42\u0e2b\u0e21\u0e14", ["\ud83c\udf1e Light", "\ud83c\udf19 Night"], horizontal=True, label_visibility="collapsed")
     st.session_state.theme_mode = "dark" if "Night" in theme else "light"
 
 # ✅ Custom CSS
@@ -50,8 +50,8 @@ def update_keywords():
     if st.session_state.get("chk_resp"): selected.append("Abnormal Respiration")
 
     # BMI
-    if st.session_state.get("chk_bmi_25"): selected.append("BMI ≥ 25")
-    if st.session_state.get("chk_bmi_28"): selected.append("BMI ≥ 27")
+    if st.session_state.get("chk_bmi_25"): selected.append("BMI \u2265 25")
+    if st.session_state.get("chk_bmi_28"): selected.append("BMI \u2265 27")
 
     # CBC
     if st.session_state.get("cbc_main"):
@@ -160,6 +160,18 @@ def update_keywords():
         us_detail = st.session_state.get("txt_us", "").strip()
         selected.append(f"Abnormal US ({us_detail})" if us_detail else "Abnormal US")
 
+    # ✅ Mammogram BI-RADS
+    if st.session_state.get("chk_mammo"):
+        for key, label in {
+            "chk_birads_3": "BI-RADS 3",
+            "chk_birads_4a": "BI-RADS 4A",
+            "chk_birads_4b": "BI-RADS 4B",
+            "chk_birads_4c": "BI-RADS 4C",
+            "chk_birads_5": "BI-RADS 5"
+        }.items():
+            if st.session_state.get(key):
+                selected.append(label)
+
     st.session_state.selected_keywords = selected
 
 # ✅ Clear Button
@@ -167,7 +179,7 @@ def clear_keywords():
     for k in list(st.session_state.keys()):
         if k.startswith("chk_") or k in [
             "cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main",
-            "ua_main", "txt_cxr", "txt_us"
+            "ua_main", "txt_cxr", "txt_us", "chk_mammo"
         ]:
             st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
@@ -178,20 +190,20 @@ combined_text = "; ".join(st.session_state.selected_keywords)
 
 bg_color = "#333" if st.session_state.theme_mode == "dark" else "#f0f2f6"
 st.markdown(f"<div style='background-color:{bg_color}; padding:15px; border-radius:10px; margin-bottom:20px;'>"
-            "<h3>📝 ระบบช่วยเขียนข้อความ consult</h3>", unsafe_allow_html=True)
+            "<h3>\ud83d\udcdd \u0e23\u0e30\u0e1a\u0e1a\u0e0a\u0e48\u0e27\u0e22\u0e40\u0e02\u0e35\u0e22\u0e19\u0e02\u0e49\u0e2d\u0e21 consult</h3>", unsafe_allow_html=True)
 
 c1, c2, c3 = st.columns([2, 6, 2])
 with c1:
     components.html(
-        f"<button onclick=\"navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!');\""
+        f"<button onclick=\"navigator.clipboard.writeText('{combined_text}'); alert('\u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e40\u0e23\u0e35\u0e22\u0e1a\u0e23\u0e49\u0e2d\u0e22\u0e41\u0e25\u0e49\u0e27!');\""
         "style=\"padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;\">"
-        "📋 คัดลอกข้อความ</button>",
+        "\ud83d\udccb \u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e21\u0e35</button>",
         height=60,
     )
 with c2:
-    st.text_area("รวมคำ consult", value=combined_text, height=80)
+    st.text_area("\u0e23\u0e27\u0e21\u0e04\u0e33 consult", value=combined_text, height=80)
 with c3:
-    if st.button("🗑 ล้างข้อความ"):
+    if st.button("\ud83d\udd91 \u0e25\u0e49\u0e32\u0e07\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21"):
         clear_keywords()
 
 st.markdown("</div>", unsafe_allow_html=True)
@@ -287,13 +299,25 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
         st.checkbox("Pap smear", key="chk_pap", on_change=update_keywords)
 
 # ✅ Section 3: Radiology results
-st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>3. ผลตรวจทางรังสีวิทยา</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>3. \u0e1c\u0e25\u0e15\u0e23\u0e27\u0e08\u0e17\u0e32\u0e07\u0e23\u0e31\u0e07\u0e2a\u0e35\u0e27\u0e34\u0e17\u0e22\u0e32</div>", unsafe_allow_html=True)
 
-with st.expander("คลิกเพื่อเลือกข้อมูล (Radiology results)", expanded=False):
-    col_cxr, col_us = st.columns([1, 1])
+with st.expander("\u0e04\u0e25\u0e34\u0e01\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25 (Radiology results)", expanded=False):
+    col_cxr, col_us, col_mammo = st.columns([1, 1, 1])
+
     with col_cxr:
         st.checkbox("Chest PA", key="chk_cxr", on_change=update_keywords)
-        st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_cxr", on_change=update_keywords)
+        st.text_input("\u0e23\u0e30\u0e1a\u0e38\u0e2b\u0e23\u0e37\u0e2d\u0e44\u0e21\u0e48\u0e23\u0e30\u0e1a\u0e38\u0e01\u0e47\u0e44\u0e14\u0e49", key="txt_cxr", on_change=update_keywords)
+
     with col_us:
         st.checkbox("Abdominal ultrasound", key="chk_us", on_change=update_keywords)
-        st.text_input("จำเป็นต้องระบุอวัยวะ", key="txt_us", on_change=update_keywords)
+        st.text_input("\u0e08\u0e33\u0e40\u0e1b\u0e47\u0e19\u0e15\u0e49\u0e2d\u0e07\u0e23\u0e30\u0e1a\u0e38\u0e2d\u0e27\u0e31\u0e22\u0e27\u0e30", key="txt_us", on_change=update_keywords)
+
+    with col_mammo:
+        st.checkbox("Mammogram with ultrasound breast", key="chk_mammo", on_change=update_keywords)
+        if st.session_state.get("chk_mammo"):
+            st.checkbox("BI-RADS 3", key="chk_birads_3", on_change=update_keywords)
+            st.checkbox("BI-RADS 4A", key="chk_birads_4a", on_change=update_keywords)
+            st.checkbox("BI-RADS 4B", key="chk_birads_4b", on_change=update_keywords)
+            st.checkbox("BI-RADS 4C", key="chk_birads_4c", on_change=update_keywords)
+            st.checkbox("BI-RADS 5", key="chk_birads_5", on_change=update_keywords)
+
