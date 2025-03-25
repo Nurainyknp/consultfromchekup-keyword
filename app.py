@@ -149,7 +149,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล",
 
         with col_bmi:
             st.checkbox("BMI ≥ 25", key="chk_bmi_25", on_change=update_keywords)
-            st.checkbox("BMI ≥ 28", key="chk_bmi_28", on_change=update_keywords)
+            st.checkbox("BMI ≥ 27", key="chk_bmi_28", on_change=update_keywords)
 
         with col_pe:
             st.text_input("พิมพ์ผลตรวจร่างกาย", key="pe_input", on_change=update_keywords)
