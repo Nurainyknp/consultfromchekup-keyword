@@ -51,7 +51,7 @@ def update_keywords():
 
     # BMI
     if st.session_state.get("chk_bmi_25"): selected.append("BMI ≥ 25")
-    if st.session_state.get("chk_bmi_28"): selected.append("BMI ≥ 27")
+    if st.session_state.get("chk_bmi_28"): selected.append("BMI ≥ 28")
 
     # CBC
     if st.session_state.get("cbc_main"):
@@ -61,7 +61,8 @@ def update_keywords():
             "chk_plt": "PLT", "chk_neutro": "Neutrophils", "chk_lymph": "Lymphocytes",
             "chk_eos": "Eosinophils"
         }.items():
-            if st.session_state.get(k): cbc_items.append(label)
+            if st.session_state.get(k): 
+                cbc_items.append(label)
         if cbc_items:
             selected.append("Abnormal CBC (" + ", ".join(cbc_items) + ")")
 
@@ -92,7 +93,8 @@ def update_keywords():
         for k, label in {
             "chk_ast": "AST", "chk_alt": "ALT", "chk_alp": "ALP", "chk_ggt": "GGT"
         }.items():
-            if st.session_state.get(k): lft_items.append(label)
+            if st.session_state.get(k): 
+                lft_items.append(label)
         if lft_items:
             selected.append("Abnormal LFT (" + ", ".join(lft_items) + ")")
         else:
@@ -159,6 +161,19 @@ def update_keywords():
     if st.session_state.get("chk_us"):
         us_detail = st.session_state.get("txt_us", "").strip()
         selected.append(f"Abnormal US ({us_detail})" if us_detail else "Abnormal US")
+    
+    # Radiology additional: Mammogram with ultrasound breast and BI-RADS suboptions
+    if st.session_state.get("chk_mammo"):
+        if st.session_state.get("chk_birads3"):
+            selected.append("BI-RADS 3")
+        if st.session_state.get("chk_birads4a"):
+            selected.append("BI-RADS 4A")
+        if st.session_state.get("chk_birads4b"):
+            selected.append("BI-RADS 4B")
+        if st.session_state.get("chk_birads4c"):
+            selected.append("BI-RADS 4C")
+        if st.session_state.get("chk_birads5"):
+            selected.append("BI-RADS 5")
 
     st.session_state.selected_keywords = selected
 
@@ -297,3 +312,17 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     with col_us:
         st.checkbox("Abdominal ultrasound", key="chk_us", on_change=update_keywords)
         st.text_input("จำเป็นต้องระบุอวัยวะ", key="txt_us", on_change=update_keywords)
+    
+    st.checkbox("Mammogram with ultrasound breast", key="chk_mammo", on_change=update_keywords)
+    if st.session_state.get("chk_mammo"):
+        col_birads = st.columns(5)
+        with col_birads[0]:
+            st.checkbox("BI-RADS 3", key="chk_birads3", on_change=update_keywords)
+        with col_birads[1]:
+            st.checkbox("BI-RADS 4A", key="chk_birads4a", on_change=update_keywords)
+        with col_birads[2]:
+            st.checkbox("BI-RADS 4B", key="chk_birads4b", on_change=update_keywords)
+        with col_birads[3]:
+            st.checkbox("BI-RADS 4C", key="chk_birads4c", on_change=update_keywords)
+        with col_birads[4]:
+            st.checkbox("BI-RADS 5", key="chk_birads5", on_change=update_keywords)
