@@ -8,6 +8,10 @@ if "theme_mode" not in st.session_state:
     st.session_state.theme_mode = "light"
 if "selected_keywords" not in st.session_state:
     st.session_state.selected_keywords = []
+if "metabolic_main" not in st.session_state:
+    st.session_state.metabolic_main = False
+if "tumor_main" not in st.session_state:
+    st.session_state.tumor_main = False
 
 # ✅ Theme toggle button
 col1, col2, col3 = st.columns([10, 1, 2])
@@ -42,18 +46,15 @@ if st.session_state.theme_mode == "dark":
 def update_keywords():
     selected = []
 
-    # Vital signs
     if st.session_state.get("chk_bp"): selected.append("Abnormal BP")
     if st.session_state.get("chk_pulse_fast") or st.session_state.get("chk_pulse_slow"):
         selected.append("Abnormal Pulse")
     if st.session_state.get("chk_temp"): selected.append("Abnormal Temperature")
     if st.session_state.get("chk_resp"): selected.append("Abnormal Respiration")
 
-    # BMI
     if st.session_state.get("chk_bmi_25"): selected.append("BMI ≥ 25")
     if st.session_state.get("chk_bmi_28"): selected.append("BMI ≥ 27")
 
-    # CBC
     if st.session_state.get("cbc_main"):
         cbc_items = []
         for k, label in {
@@ -65,14 +66,12 @@ def update_keywords():
         if cbc_items:
             selected.append("Abnormal CBC (" + ", ".join(cbc_items) + ")")
 
-    # Sugar
     sugar_items = []
     if st.session_state.get("chk_glu"): sugar_items.append("Glucose")
     if st.session_state.get("chk_hba1c"): sugar_items.append("HbA1C")
     if sugar_items:
         selected.append("Abnormal Sugar (" + ", ".join(sugar_items) + ")")
 
-    # Lipid
     lipid_items = []
     if st.session_state.get("chk_tc"): lipid_items.append("TC")
     if st.session_state.get("chk_trig"): lipid_items.append("Trig")
@@ -81,12 +80,10 @@ def update_keywords():
     if lipid_items:
         selected.append("Abnormal Lipid (" + ", ".join(lipid_items) + ")")
 
-    # Metabolic
     if st.session_state.get("chk_uric"): selected.append("Abnormal Uric")
     if st.session_state.get("chk_urinecre"): selected.append("Abnormal Urine cre.")
     if st.session_state.get("chk_microalb"): selected.append("Abnormal Microalbumin")
 
-    # LFT
     if st.session_state.get("lft_main"):
         lft_items = []
         for k, label in {
@@ -98,11 +95,9 @@ def update_keywords():
         else:
             selected.append("Abnormal LFT")
 
-    # PE
     if st.session_state.get("pe_input"):
         selected.append(f"Abnormal PE ({st.session_state.pe_input})")
 
-    # Kidney Function
     if st.session_state.get("kidney_main"):
         kidney_items = []
         if st.session_state.get("chk_bun"): kidney_items.append("BUN")
@@ -113,7 +108,6 @@ def update_keywords():
         else:
             selected.append("Abnormal kidney")
 
-    # Thyroid Function
     if st.session_state.get("thyroid_main"):
         thyroid_items = []
         if st.session_state.get("chk_tsh"): thyroid_items.append("TSH")
@@ -124,7 +118,6 @@ def update_keywords():
         else:
             selected.append("Abnormal thyroid")
 
-    # Tumor markers
     if st.session_state.get("chk_afp"): selected.append("Abnormal AFP")
     if st.session_state.get("chk_ca125"): selected.append("Abnormal CA-125")
     if st.session_state.get("chk_ca199"): selected.append("Abnormal CA 19-9")
@@ -135,11 +128,10 @@ def update_keywords():
 # ✅ Clear Button
 def clear_keywords():
     for k in list(st.session_state.keys()):
-        if k.startswith("chk_") or k in ["cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main"]:
+        if k.startswith("chk_") or k in ["cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main", "metabolic_main", "tumor_main"]:
             st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
 
-# ✅ เรียกอัปเดตข้อความ
 update_keywords()
 combined_text = "; ".join(st.session_state.selected_keywords)
 
@@ -203,16 +195,18 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("Eosinophils", key="chk_eos", on_change=update_keywords)
 
     with col_met:
-        st.markdown("🔹 Metabolic")
-        st.checkbox("Glucose (Fasting/Non-Fasting)", key="chk_glu", on_change=update_keywords)
-        st.checkbox("HbA1C", key="chk_hba1c", on_change=update_keywords)
-        st.checkbox("Total Cholesterol", key="chk_tc", on_change=update_keywords)
-        st.checkbox("Triglyceride", key="chk_trig", on_change=update_keywords)
-        st.checkbox("HDL-C", key="chk_hdl", on_change=update_keywords)
-        st.checkbox("LDL-C", key="chk_ldl", on_change=update_keywords)
-        st.checkbox("Uric Acid", key="chk_uric", on_change=update_keywords)
-        st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
-        st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
+        st.checkbox("ผลตรวจด้านเมตาบอลิซึม (Metabolic)", key="metabolic_main", on_change=update_keywords)
+        if st.session_state.get("metabolic_main"):
+            with st.expander("รายละเอียด Metabolic", expanded=True):
+                st.checkbox("Glucose (Fasting/Non-Fasting)", key="chk_glu", on_change=update_keywords)
+                st.checkbox("HbA1C", key="chk_hba1c", on_change=update_keywords)
+                st.checkbox("Total Cholesterol", key="chk_tc", on_change=update_keywords)
+                st.checkbox("Triglyceride", key="chk_trig", on_change=update_keywords)
+                st.checkbox("HDL-C", key="chk_hdl", on_change=update_keywords)
+                st.checkbox("LDL-C", key="chk_ldl", on_change=update_keywords)
+                st.checkbox("Uric Acid", key="chk_uric", on_change=update_keywords)
+                st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
+                st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
 
     with col_lft:
         st.checkbox("การทำงานของตับ (Liver function test)", key="lft_main", on_change=update_keywords)
@@ -239,8 +233,10 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("Free T4", key="chk_ft4", on_change=update_keywords)
 
     with col_tumor:
-        st.markdown("🔹 สารบ่งชี้มะเร็ง (Tumor markers)")
-        st.checkbox("AFP", key="chk_afp", on_change=update_keywords)
-        st.checkbox("CA-125", key="chk_ca125", on_change=update_keywords)
-        st.checkbox("CA 19-9", key="chk_ca199", on_change=update_keywords)
-        st.checkbox("PSA", key="chk_psa", on_change=update_keywords)
+        st.checkbox("สารบ่งชี้มะเร็ง (Tumor markers)", key="tumor_main", on_change=update_keywords)
+        if st.session_state.get("tumor_main"):
+            with st.expander("รายละเอียด Tumor markers", expanded=True):
+                st.checkbox("AFP", key="chk_afp", on_change=update_keywords)
+                st.checkbox("CA-125", key="chk_ca125", on_change=update_keywords)
+                st.checkbox("CA 19-9", key="chk_ca199", on_change=update_keywords)
+                st.checkbox("PSA", key="chk_psa", on_change=update_keywords)
