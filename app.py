@@ -12,8 +12,11 @@ if "selected_keywords" not in st.session_state:
 # ✅ Theme toggle button
 col1, col2, col3 = st.columns([10, 1, 2])
 with col3:
-    theme = st.radio("\u0e42\u0e2b\u0e21\u0e14", ["\ud83c\udf1e Light", "\ud83c\udf19 Night"], horizontal=True, label_visibility="collapsed")
-    st.session_state.theme_mode = "dark" if "Night" in theme else "light"
+    theme_options = ["Light", "Night"]
+    icon_map = {"Light": "🌞", "Night": "🌙"}
+    theme_label = st.radio("โหมด", theme_options, horizontal=True, label_visibility="collapsed")
+    theme = f"{icon_map[theme_label]} {theme_label}"
+    st.session_state.theme_mode = "dark" if theme_label == "Night" else "light"
 
 # ✅ Custom CSS
 if st.session_state.theme_mode == "dark":
@@ -129,106 +132,3 @@ def clear_keywords():
         if k.startswith("chk_") or k in ["cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main"]:
             st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
-
-# ✅ เรียกอัปเดตข้อความ
-update_keywords()
-combined_text = "; ".join(st.session_state.selected_keywords)
-
-# ✅ กล่องแสดงผล + ปุ่มคัดลอก / ล้าง
-bg_color = "#333" if st.session_state.theme_mode == "dark" else "#f0f2f6"
-st.markdown(f"<div style='background-color:{bg_color}; padding:15px; border-radius:10px; margin-bottom:20px;'>"
-            "<h3>\ud83d\udcdd \u0e23\u0e30\u0e1a\u0e1a\u0e0a\u0e48\u0e27\u0e22\u0e40\u0e02\u0e35\u0e22\u0e19\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25 consult</h3>", unsafe_allow_html=True)
-
-c1, c2, c3 = st.columns([2, 6, 2])
-with c1:
-    components.html(
-        f"<button onclick=\"navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!');\""
-        "style=\"padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;\">"
-        "\ud83d\udccb \u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e23\u0e32\u0e22\u0e07\u0e32\u0e19</button>",
-        height=60,
-    )
-with c2:
-    st.text_area("รวมคำ consult", value=combined_text, height=80)
-with c3:
-    if st.button("\ud83d\uddd1 \u0e25\u0e49\u0e32\u0e07\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21"):
-        clear_keywords()
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-# ✅ หัวข้อ 1: Vital Signs & BMI & PE
-st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>1. ผล Vital signs และการตรวจร่างกาย</div>", unsafe_allow_html=True)
-
-with st.expander("คลิกเพื่อเลือกข้อมูล (Vital signs และ PE)", expanded=False):
-    col_vs, col_bmi, col_pe = st.columns(3)
-
-    with col_vs:
-        st.checkbox("BP สูง", key="chk_bp", on_change=update_keywords)
-        st.checkbox("ชีพจรเร็ว", key="chk_pulse_fast", on_change=update_keywords)
-        st.checkbox("ชีพจรช้า", key="chk_pulse_slow", on_change=update_keywords)
-        st.checkbox("อุณหภูมิร่างกายผิดปกติ", key="chk_temp", on_change=update_keywords)
-        st.checkbox("การหายใจผิดปกติ", key="chk_resp", on_change=update_keywords)
-
-    with col_bmi:
-        st.checkbox("BMI ≥ 25", key="chk_bmi_25", on_change=update_keywords)
-        st.checkbox("BMI ≥ 28", key="chk_bmi_28", on_change=update_keywords)
-
-    with col_pe:
-        st.text_input("พิมพ์ผลตรวจร่างกาย", key="pe_input", on_change=update_keywords)
-
-# ✅ หัวข้อ 2: Lab results
-st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>2. ผลการตรวจทางห้องปฏิบัติการ</div>", unsafe_allow_html=True)
-
-with st.expander("คลิกเพื่อเลือกข้อมูล (Lab results)", expanded=False):
-    col_cbc, col_met, col_lft = st.columns(3)
-
-    with col_cbc:
-        st.checkbox("ความสมบูรณ์ของเม็ดเลือด (CBC)", key="cbc_main", on_change=update_keywords)
-        if st.session_state.get("cbc_main"):
-            st.checkbox("Hemoglobin (Hb)", key="chk_hb", on_change=update_keywords)
-            st.checkbox("Hematocrit (Hct)", key="chk_hct", on_change=update_keywords)
-            st.checkbox("Red blood cell (RBC)", key="chk_rbc", on_change=update_keywords)
-            st.checkbox("White blood cell (WBC)", key="chk_wbc", on_change=update_keywords)
-            st.checkbox("Platelet count (PLT)", key="chk_plt", on_change=update_keywords)
-            st.checkbox("Neutrophil", key="chk_neutro", on_change=update_keywords)
-            st.checkbox("Lymphocytes", key="chk_lymph", on_change=update_keywords)
-            st.checkbox("Eosinophils", key="chk_eos", on_change=update_keywords)
-
-    with col_met:
-        st.markdown("\ud83d\udd39 Metabolic")
-        st.checkbox("Glucose (Fasting/Non-Fasting)", key="chk_glu", on_change=update_keywords)
-        st.checkbox("HbA1C", key="chk_hba1c", on_change=update_keywords)
-        st.checkbox("Total Cholesterol", key="chk_tc", on_change=update_keywords)
-        st.checkbox("Triglyceride", key="chk_trig", on_change=update_keywords)
-        st.checkbox("HDL-C", key="chk_hdl", on_change=update_keywords)
-        st.checkbox("LDL-C", key="chk_ldl", on_change=update_keywords)
-        st.checkbox("Uric Acid", key="chk_uric", on_change=update_keywords)
-        st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
-        st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
-
-    with col_lft:
-        lft_checked = st.checkbox("การทำงานของตับ (Liver function test)", key="lft_main", on_change=update_keywords)
-        if lft_checked:
-            st.checkbox("AST (SGOT)", key="chk_ast", on_change=update_keywords)
-            st.checkbox("ALT (SGPT)", key="chk_alt", on_change=update_keywords)
-            st.checkbox("ALP", key="chk_alp", on_change=update_keywords)
-            st.checkbox("GGT", key="chk_ggt", on_change=update_keywords)
-
-    col_kidney, col_thyroid, col_tumor = st.columns(3)
-
-    with col_kidney:
-        kidney_checked = st.checkbox("การทำงานของไต (Kidney function test)", key="kidney_main", on_change=update_keywords)
-        if kidney_checked:
-            st.checkbox("Blood urea nitrogen (BUN)", key="chk_bun", on_change=update_keywords)
-            st.checkbox("Creatinine", key="chk_creatinine", on_change=update_keywords)
-            st.checkbox("eGFR", key="chk_egfr", on_change=update_keywords)
-
-    with col_thyroid:
-        thyroid_checked = st.checkbox("การทำงานของต่อมไทรอยด์ (Thyroid function test)", key="thyroid_main", on_change=update_keywords)
-        if thyroid_checked:
-            st.checkbox("TSH", key="chk_tsh", on_change=update_keywords)
-            st.checkbox("Free T3", key="chk_ft3", on_change=update_keywords)
-            st.checkbox("Free T4", key="chk_ft4", on_change=update_keywords)
-
-    with col_tumor:
-        st.markdown("\ud83d\udd39 \u0e2a\u0e32\u0e23\u0e1a\u0e48\u0e07\u0e0a\u0e35\u0e49\u0e21\u0e30\u0e40\u0e23\u0e47\u0e07 (Tumor markers)")
-        # ยังไม่มี checkbox ในตอนนี้
