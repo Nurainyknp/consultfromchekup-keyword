@@ -68,6 +68,18 @@ def update_keywords():
             cbc_items.append("Hb")
         if st.session_state.get("chk_hct"):
             cbc_items.append("Hct")
+        if st.session_state.get("chk_rbc"):
+            cbc_items.append("RBC")
+        if st.session_state.get("chk_wbc"):
+            cbc_items.append("WBC")
+        if st.session_state.get("chk_plt"):
+            cbc_items.append("PLT")
+        if st.session_state.get("chk_neutro"):
+            cbc_items.append("Neutrophils")
+        if st.session_state.get("chk_lymph"):
+            cbc_items.append("Lymphocytes")
+        if st.session_state.get("chk_eos"):
+            cbc_items.append("Eosinophils")
         if cbc_items:
             cbc_text += " (" + ", ".join(cbc_items) + ")"
         selected.append(cbc_text)
@@ -158,6 +170,13 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             if st.session_state.get("cbc_main"):
                 st.checkbox("Hemoglobin (Hb)", key="chk_hb", on_change=update_keywords)
                 st.checkbox("Hematocrit (Hct)", key="chk_hct", on_change=update_keywords)
+                st.checkbox("Red blood cell (RBC)", key="chk_rbc", on_change=update_keywords)
+                st.checkbox("White blood cell (WBC)", key="chk_wbc", on_change=update_keywords)
+                st.checkbox("Platelet count (PLT)", key="chk_plt", on_change=update_keywords)
+                st.checkbox("Neutrophil", key="chk_neutro", on_change=update_keywords)
+                st.checkbox("Lymphocytes", key="chk_lymph", on_change=update_keywords)
+                st.checkbox("Eosinophils", key="chk_eos", on_change=update_keywords)
+
         with col_met:
             st.markdown("🔹 Metabolic")
         with col_liver:
