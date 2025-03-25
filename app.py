@@ -160,22 +160,6 @@ def update_keywords():
         us_detail = st.session_state.get("txt_us", "").strip()
         selected.append(f"Abnormal US ({us_detail})" if us_detail else "Abnormal US")
 
-    # ✅ Mammogram + BI-RADS
-    if st.session_state.get("chk_mammo"):
-        birads_list = []
-        for k, label in {
-            "chk_birads3": "BI-RADS 3",
-            "chk_birads4a": "BI-RADS 4A",
-            "chk_birads4b": "BI-RADS 4B",
-            "chk_birads4c": "BI-RADS 4C",
-            "chk_birads5": "BI-RADS 5"
-        }.items():
-            if st.session_state.get(k): birads_list.append(label)
-        if birads_list:
-            selected.extend(birads_list)
-        else:
-            selected.append("Abnormal Mammogram/US breast")
-
     st.session_state.selected_keywords = selected
 
 # ✅ Clear Button
@@ -183,8 +167,7 @@ def clear_keywords():
     for k in list(st.session_state.keys()):
         if k.startswith("chk_") or k in [
             "cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main",
-            "ua_main", "txt_cxr", "txt_us",
-            "chk_mammo", "chk_birads3", "chk_birads4a", "chk_birads4b", "chk_birads4c", "chk_birads5"
+            "ua_main", "txt_cxr", "txt_us"
         ]:
             st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
@@ -233,9 +216,77 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     with col_pe:
         st.text_input("พิมพ์ผลตรวจร่างกาย", key="pe_input", on_change=update_keywords)
 
-# ✅ Section 2: Lab results (คงเดิม)
+# ✅ Section 2: Lab results
+st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>2. ผลการตรวจทางห้องปฏิบัติการ</div>", unsafe_allow_html=True)
 
-# ✅ Section 3: Radiology results (มีส่วนที่เพิ่ม)
+with st.expander("คลิกเพื่อเลือกข้อมูล (Lab results)", expanded=False):
+    col_cbc, col_met, col_lft = st.columns(3)
+
+    with col_cbc:
+        st.checkbox("ความสมบูรณ์ของเม็ดเลือด (CBC)", key="cbc_main", on_change=update_keywords)
+        if st.session_state.get("cbc_main"):
+            st.checkbox("Hemoglobin (Hb)", key="chk_hb", on_change=update_keywords)
+            st.checkbox("Hematocrit (Hct)", key="chk_hct", on_change=update_keywords)
+            st.checkbox("Red blood cell (RBC)", key="chk_rbc", on_change=update_keywords)
+            st.checkbox("White blood cell (WBC)", key="chk_wbc", on_change=update_keywords)
+            st.checkbox("Platelet count (PLT)", key="chk_plt", on_change=update_keywords)
+            st.checkbox("Neutrophil", key="chk_neutro", on_change=update_keywords)
+            st.checkbox("Lymphocytes", key="chk_lymph", on_change=update_keywords)
+            st.checkbox("Eosinophils", key="chk_eos", on_change=update_keywords)
+
+    with col_met:
+        st.markdown("🔹 Metabolic")
+        st.checkbox("Glucose (Fasting/Non-Fasting)", key="chk_glu", on_change=update_keywords)
+        st.checkbox("HbA1C", key="chk_hba1c", on_change=update_keywords)
+        st.checkbox("Total Cholesterol", key="chk_tc", on_change=update_keywords)
+        st.checkbox("Triglyceride", key="chk_trig", on_change=update_keywords)
+        st.checkbox("HDL-C", key="chk_hdl", on_change=update_keywords)
+        st.checkbox("LDL-C", key="chk_ldl", on_change=update_keywords)
+        st.checkbox("Uric Acid", key="chk_uric", on_change=update_keywords)
+        st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
+        st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
+
+    with col_lft:
+        st.checkbox("การทำงานของตับ (Liver function test)", key="lft_main", on_change=update_keywords)
+        if st.session_state.get("lft_main"):
+            st.checkbox("AST (SGOT)", key="chk_ast", on_change=update_keywords)
+            st.checkbox("ALT (SGPT)", key="chk_alt", on_change=update_keywords)
+            st.checkbox("ALP", key="chk_alp", on_change=update_keywords)
+            st.checkbox("GGT", key="chk_ggt", on_change=update_keywords)
+
+    col_kidney, col_thyroid, col_other = st.columns(3)
+
+    with col_kidney:
+        st.checkbox("การทำงานของไต (Kidney function test)", key="kidney_main", on_change=update_keywords)
+        if st.session_state.get("kidney_main"):
+            st.checkbox("Blood urea nitrogen (BUN)", key="chk_bun", on_change=update_keywords)
+            st.checkbox("Creatinine", key="chk_creatinine", on_change=update_keywords)
+            st.checkbox("eGFR", key="chk_egfr", on_change=update_keywords)
+        st.checkbox("การตรวจปัสสาวะ (Urinalysis: UA)", key="ua_main", on_change=update_keywords)
+        if st.session_state.get("ua_main"):
+            st.checkbox("White blood cell (WBC)", key="chk_ua_wbc", on_change=update_keywords)
+            st.checkbox("Red blood cell (RBC)", key="chk_ua_rbc", on_change=update_keywords)
+            st.checkbox("Protein", key="chk_ua_protein", on_change=update_keywords)
+            st.checkbox("Glucose", key="chk_ua_glucose", on_change=update_keywords)
+
+    with col_thyroid:
+        st.checkbox("การทำงานของต่อมไทรอยด์ (Thyroid function test)", key="thyroid_main", on_change=update_keywords)
+        if st.session_state.get("thyroid_main"):
+            st.checkbox("TSH", key="chk_tsh", on_change=update_keywords)
+            st.checkbox("Free T3", key="chk_ft3", on_change=update_keywords)
+            st.checkbox("Free T4", key="chk_ft4", on_change=update_keywords)
+        st.checkbox("วิตามินดี (Vitamin D total)", key="chk_vitd", on_change=update_keywords)
+
+    with col_other:
+        st.markdown("🔹 สารบ่งชี้มะเร็ง (Tumor markers)")
+        st.checkbox("AFP", key="chk_afp", on_change=update_keywords)
+        st.checkbox("CA-125", key="chk_ca125", on_change=update_keywords)
+        st.checkbox("CA 19-9", key="chk_ca199", on_change=update_keywords)
+        st.checkbox("PSA", key="chk_psa", on_change=update_keywords)
+        st.checkbox("การตรวจอุจจาระ", key="chk_stool", on_change=update_keywords)
+        st.checkbox("Pap smear", key="chk_pap", on_change=update_keywords)
+
+# ✅ Section 3: Radiology results
 st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>3. ผลตรวจทางรังสีวิทยา</div>", unsafe_allow_html=True)
 
 with st.expander("คลิกเพื่อเลือกข้อมูล (Radiology results)", expanded=False):
@@ -246,12 +297,3 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     with col_us:
         st.checkbox("Abdominal ultrasound", key="chk_us", on_change=update_keywords)
         st.text_input("จำเป็นต้องระบุอวัยวะ", key="txt_us", on_change=update_keywords)
-
-    st.checkbox("Mammogram with ultrasound breast", key="chk_mammo", on_change=update_keywords)
-    if st.session_state.get("chk_mammo"):
-        st.markdown("เลือก BI-RADS:")
-        st.checkbox("BI-RADS 3", key="chk_birads3", on_change=update_keywords)
-        st.checkbox("BI-RADS 4A", key="chk_birads4a", on_change=update_keywords)
-        st.checkbox("BI-RADS 4B", key="chk_birads4b", on_change=update_keywords)
-        st.checkbox("BI-RADS 4C", key="chk_birads4c", on_change=update_keywords)
-        st.checkbox("BI-RADS 5", key="chk_birads5", on_change=update_keywords)
