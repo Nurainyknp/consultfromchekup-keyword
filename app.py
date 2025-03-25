@@ -12,7 +12,7 @@ if "selected_keywords" not in st.session_state:
 # ✅ Theme toggle button
 col1, col2, col3 = st.columns([10, 1, 2])
 with col3:
-    theme = st.radio("โหมด", ["🌞 Light", "🌙 Night"], horizontal=True, label_visibility="collapsed")
+    theme = st.radio("\u0e42\u0e2b\u0e21\u0e14", ["\ud83c\udf1e Light", "\ud83c\udf19 Night"], horizontal=True, label_visibility="collapsed")
     st.session_state.theme_mode = "dark" if "Night" in theme else "light"
 
 # ✅ Custom CSS
@@ -42,18 +42,15 @@ if st.session_state.theme_mode == "dark":
 def update_keywords():
     selected = []
 
-    # Vital signs
     if st.session_state.get("chk_bp"): selected.append("Abnormal BP")
     if st.session_state.get("chk_pulse_fast") or st.session_state.get("chk_pulse_slow"):
         selected.append("Abnormal Pulse")
     if st.session_state.get("chk_temp"): selected.append("Abnormal Temperature")
     if st.session_state.get("chk_resp"): selected.append("Abnormal Respiration")
 
-    # BMI
-    if st.session_state.get("chk_bmi_25"): selected.append("BMI ≥ 25")
-    if st.session_state.get("chk_bmi_28"): selected.append("BMI ≥ 27")
+    if st.session_state.get("chk_bmi_25"): selected.append("BMI \u2265 25")
+    if st.session_state.get("chk_bmi_28"): selected.append("BMI \u2265 27")
 
-    # CBC
     if st.session_state.get("cbc_main"):
         cbc_items = []
         for k, label in {
@@ -65,14 +62,12 @@ def update_keywords():
         if cbc_items:
             selected.append("Abnormal CBC (" + ", ".join(cbc_items) + ")")
 
-    # Sugar
     sugar_items = []
     if st.session_state.get("chk_glu"): sugar_items.append("Glucose")
     if st.session_state.get("chk_hba1c"): sugar_items.append("HbA1C")
     if sugar_items:
         selected.append("Abnormal Sugar (" + ", ".join(sugar_items) + ")")
 
-    # Lipid
     lipid_items = []
     if st.session_state.get("chk_tc"): lipid_items.append("TC")
     if st.session_state.get("chk_trig"): lipid_items.append("Trig")
@@ -81,12 +76,10 @@ def update_keywords():
     if lipid_items:
         selected.append("Abnormal Lipid (" + ", ".join(lipid_items) + ")")
 
-    # Metabolic
     if st.session_state.get("chk_uric"): selected.append("Abnormal Uric")
     if st.session_state.get("chk_urinecre"): selected.append("Abnormal Urine cre.")
     if st.session_state.get("chk_microalb"): selected.append("Abnormal Microalbumin")
 
-    # LFT
     if st.session_state.get("lft_main"):
         lft_items = []
         for k, label in {
@@ -98,11 +91,9 @@ def update_keywords():
         else:
             selected.append("Abnormal LFT")
 
-    # PE
     if st.session_state.get("pe_input"):
         selected.append(f"Abnormal PE ({st.session_state.pe_input})")
 
-    # Kidney Function
     if st.session_state.get("kidney_main"):
         kidney_items = []
         if st.session_state.get("chk_bun"): kidney_items.append("BUN")
@@ -113,7 +104,6 @@ def update_keywords():
         else:
             selected.append("Abnormal kidney")
 
-    # Thyroid Function
     if st.session_state.get("thyroid_main"):
         thyroid_items = []
         if st.session_state.get("chk_tsh"): thyroid_items.append("TSH")
@@ -124,7 +114,6 @@ def update_keywords():
         else:
             selected.append("Abnormal thyroid")
 
-    # Tumor markers
     if st.session_state.get("chk_afp"): selected.append("Abnormal AFP")
     if st.session_state.get("chk_ca125"): selected.append("Abnormal CA-125")
     if st.session_state.get("chk_ca199"): selected.append("Abnormal CA 19-9")
@@ -139,32 +128,31 @@ def clear_keywords():
             st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
 
-# ✅ Generate consult text
 update_keywords()
 combined_text = "; ".join(st.session_state.selected_keywords)
 
-# ✅ Display consult + buttons
+# ✅ Consult Box and Buttons
 bg_color = "#333" if st.session_state.theme_mode == "dark" else "#f0f2f6"
 st.markdown(f"<div style='background-color:{bg_color}; padding:15px; border-radius:10px; margin-bottom:20px;'>"
-            "<h3>📝 ระบบช่วยเขียนข้อความ consult</h3>", unsafe_allow_html=True)
+            "<h3>\ud83d\udcdd \u0e23\u0e30\u0e1a\u0e1a\u0e0a\u0e48\u0e27\u0e22\u0e40\u0e02\u0e35\u0e22\u0e19\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21 consult</h3>", unsafe_allow_html=True)
 
 c1, c2, c3 = st.columns([2, 6, 2])
 with c1:
     components.html(
-        f"<button onclick=\"navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!');\""
+        f"<button onclick=\"navigator.clipboard.writeText('{combined_text}'); alert('\u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e40\u0e23\u0e35\u0e22\u0e1a\u0e23\u0e49\u0e2d\u0e22\u0e41\u0e25\u0e49\u0e27!');\""
         "style=\"padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;\">"
-        "📋 คัดลอกข้อความ</button>",
+        "\ud83d\udccb \u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e40\u0e23\u0e35\u0e22\u0e1a\u0e23\u0e49\u0e2d\u0e22</button>",
         height=60,
     )
 with c2:
     st.text_area("รวมคำ consult", value=combined_text, height=80)
 with c3:
-    if st.button("🗑 ล้างข้อความ"):
+    if st.button("\ud83d\uddd1 \u0e25\u0e49\u0e32\u0e07\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e41\u0e25\u0e49\u0e27"):
         clear_keywords()
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ✅ Section 1: Vital Signs & PE
+# ✅ Section 1: Vitals
 st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>1. ผล Vital signs และการตรวจร่างกาย</div>", unsafe_allow_html=True)
 
 with st.expander("คลิกเพื่อเลือกข้อมูล (Vital signs และ PE)", expanded=False):
@@ -184,11 +172,11 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     with col_pe:
         st.text_input("พิมพ์ผลตรวจร่างกาย", key="pe_input", on_change=update_keywords)
 
-# ✅ Section 2: Lab Results
+# ✅ Section 2: Lab
 st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>2. ผลการตรวจทางห้องปฏิบัติการ</div>", unsafe_allow_html=True)
 
 with st.expander("คลิกเพื่อเลือกข้อมูล (Lab results)", expanded=False):
-    col_cbc, col_dummy1, col_lft = st.columns(3)
+    col_cbc, col_lft, col_kidney = st.columns(3)
 
     with col_cbc:
         st.checkbox("ความสมบูรณ์ของเม็ดเลือด (CBC)", key="cbc_main", on_change=update_keywords)
@@ -202,18 +190,6 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("Lymphocytes", key="chk_lymph", on_change=update_keywords)
             st.checkbox("Eosinophils", key="chk_eos", on_change=update_keywords)
 
-    with col_dummy1:
-        with st.expander("🔹 Metabolic"):
-            st.checkbox("Glucose (Fasting/Non-Fasting)", key="chk_glu", on_change=update_keywords)
-            st.checkbox("HbA1C", key="chk_hba1c", on_change=update_keywords)
-            st.checkbox("Total Cholesterol", key="chk_tc", on_change=update_keywords)
-            st.checkbox("Triglyceride", key="chk_trig", on_change=update_keywords)
-            st.checkbox("HDL-C", key="chk_hdl", on_change=update_keywords)
-            st.checkbox("LDL-C", key="chk_ldl", on_change=update_keywords)
-            st.checkbox("Uric Acid", key="chk_uric", on_change=update_keywords)
-            st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
-            st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
-
     with col_lft:
         st.checkbox("การทำงานของตับ (Liver function test)", key="lft_main", on_change=update_keywords)
         if st.session_state.get("lft_main"):
@@ -222,8 +198,6 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("ALP", key="chk_alp", on_change=update_keywords)
             st.checkbox("GGT", key="chk_ggt", on_change=update_keywords)
 
-    col_kidney, col_thyroid, col_tumor = st.columns(3)
-
     with col_kidney:
         st.checkbox("การทำงานของไต (Kidney function test)", key="kidney_main", on_change=update_keywords)
         if st.session_state.get("kidney_main"):
@@ -231,6 +205,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("Creatinine", key="chk_creatinine", on_change=update_keywords)
             st.checkbox("eGFR", key="chk_egfr", on_change=update_keywords)
 
+    col_thyroid, _, _ = st.columns([1, 1, 1])
     with col_thyroid:
         st.checkbox("การทำงานของต่อมไทรอยด์ (Thyroid function test)", key="thyroid_main", on_change=update_keywords)
         if st.session_state.get("thyroid_main"):
@@ -238,9 +213,21 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("Free T3", key="chk_ft3", on_change=update_keywords)
             st.checkbox("Free T4", key="chk_ft4", on_change=update_keywords)
 
-    with col_tumor:
-        with st.expander("🔹 สารบ่งชี้มะเร็ง (Tumor markers)"):
-            st.checkbox("AFP", key="chk_afp", on_change=update_keywords)
-            st.checkbox("CA-125", key="chk_ca125", on_change=update_keywords)
-            st.checkbox("CA 19-9", key="chk_ca199", on_change=update_keywords)
-            st.checkbox("PSA", key="chk_psa", on_change=update_keywords)
+# ✅ Metabolic Expander
+with st.expander("\ud83d\udd39 Metabolic"):
+    st.checkbox("Glucose (Fasting/Non-Fasting)", key="chk_glu", on_change=update_keywords)
+    st.checkbox("HbA1C", key="chk_hba1c", on_change=update_keywords)
+    st.checkbox("Total Cholesterol", key="chk_tc", on_change=update_keywords)
+    st.checkbox("Triglyceride", key="chk_trig", on_change=update_keywords)
+    st.checkbox("HDL-C", key="chk_hdl", on_change=update_keywords)
+    st.checkbox("LDL-C", key="chk_ldl", on_change=update_keywords)
+    st.checkbox("Uric Acid", key="chk_uric", on_change=update_keywords)
+    st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
+    st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
+
+# ✅ Tumor Markers Expander
+with st.expander("\ud83d\udd39 \u0e2a\u0e32\u0e23\u0e1a\u0e48\u0e07\u0e0a\u0e35\u0e49\u0e21\u0e30\u0e40\u0e23\u0e47\u0e07 (Tumor markers)"):
+    st.checkbox("AFP", key="chk_afp", on_change=update_keywords)
+    st.checkbox("CA-125", key="chk_ca125", on_change=update_keywords)
+    st.checkbox("CA 19-9", key="chk_ca199", on_change=update_keywords)
+    st.checkbox("PSA", key="chk_psa", on_change=update_keywords)
