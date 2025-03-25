@@ -49,9 +49,9 @@ def update_keywords():
     if st.session_state.get("chk_temp"): selected.append("Abnormal Temperature")
     if st.session_state.get("chk_resp"): selected.append("Abnormal Respiration")
 
-    # BMI
-    if st.session_state.get("chk_bmi_25"): selected.append("BMI ≥ 25")
-    if st.session_state.get("chk_bmi_28"): selected.append("BMI ≥ 28")
+    # BMI (ปรับ label ตาม requirement)
+    if st.session_state.get("chk_bmi_25"): selected.append("BMI ≥ 25.0-26.99")
+    if st.session_state.get("chk_bmi_28"): selected.append("BMI ≥ 27")
 
     # CBC
     if st.session_state.get("cbc_main"):
@@ -175,6 +175,38 @@ def update_keywords():
         if st.session_state.get("chk_birads5"):
             selected.append("BI-RADS 5")
 
+    # -------------------------------
+    # Section 4: Other investigations
+    if st.session_state.get("chk_12lead"):
+        text = st.session_state.get("txt_12lead", "").strip()
+        if text:
+            selected.append("12-lead EKG (" + text + ")")
+        else:
+            selected.append("Abnormal EKG")
+            
+    if st.session_state.get("chk_est"):
+        text = st.session_state.get("txt_est", "").strip()
+        if text:
+            selected.append("Abnormal EST (" + text + ")")
+        else:
+            selected.append("Abnormal EST")
+            
+    if st.session_state.get("chk_other_investigation"):
+        text = st.session_state.get("txt_other_investigation", "").strip()
+        if text:
+            selected.append("Abnormal(" + text + ")")
+        else:
+            selected.append("Abnormal")
+
+    # -------------------------------
+    # Section 5: Health issues outside tests (Consult)
+    if st.session_state.get("chk_consult"):
+        text = st.session_state.get("txt_consult", "").strip()
+        if text:
+            selected.append("Consult (" + text + ")")
+        else:
+            selected.append("Consult")
+
     st.session_state.selected_keywords = selected
 
 # ✅ Clear Button
@@ -182,7 +214,8 @@ def clear_keywords():
     for k in list(st.session_state.keys()):
         if k.startswith("chk_") or k in [
             "cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main",
-            "ua_main", "txt_cxr", "txt_us"
+            "ua_main", "txt_cxr", "txt_us",
+            "txt_12lead", "txt_est", "txt_other_investigation", "txt_consult"
         ]:
             st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
@@ -225,8 +258,8 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
         st.checkbox("การหายใจผิดปกติ", key="chk_resp", on_change=update_keywords)
 
     with col_bmi:
-        st.checkbox("BMI ≥ 25", key="chk_bmi_25", on_change=update_keywords)
-        st.checkbox("BMI ≥ 28", key="chk_bmi_28", on_change=update_keywords)
+        st.checkbox("BMI ≥ 25.0-26.99", key="chk_bmi_25", on_change=update_keywords)
+        st.checkbox("BMI ≥ 27", key="chk_bmi_28", on_change=update_keywords)
 
     with col_pe:
         st.text_input("พิมพ์ผลตรวจร่างกาย", key="pe_input", on_change=update_keywords)
@@ -326,3 +359,28 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("BI-RADS 4C", key="chk_birads4c", on_change=update_keywords)
         with col_birads[4]:
             st.checkbox("BI-RADS 5", key="chk_birads5", on_change=update_keywords)
+
+# ✅ Section 4: Other investigations
+st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>4. การตรวจอื่น ๆ</div>", unsafe_allow_html=True)
+
+with st.expander("คลิกเพื่อเลือกข้อมูล (Other investigations)", expanded=False):
+    col_12lead, col_est, col_other_invest = st.columns(3)
+    
+    with col_12lead:
+        st.checkbox("12-lead EKG", key="chk_12lead", on_change=update_keywords)
+        st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_12lead", on_change=update_keywords)
+    
+    with col_est:
+        st.checkbox("Exercise stress test (EST)", key="chk_est", on_change=update_keywords)
+        st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_est", on_change=update_keywords)
+    
+    with col_other_invest:
+        st.checkbox("ผลผิดปกติอื่น ๆ", key="chk_other_investigation", on_change=update_keywords)
+        st.text_input("จำเป็นต้องระบุ", key="txt_other_investigation", on_change=update_keywords)
+
+# ✅ Section 5: ปัญหาสุขภาพอื่น ๆ นอกเหนือรายการตรวจ
+st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>5. ปัญหาสุขภาพอื่น ๆ นอกเหนือรายการตรวจ</div>", unsafe_allow_html=True)
+
+with st.expander("คลิกเพื่อเลือกข้อมูล (Consult)", expanded=False):
+    st.checkbox("Consult", key="chk_consult", on_change=update_keywords)
+    st.text_input("จำเป็นต้องระบุ", key="txt_consult", on_change=update_keywords)
