@@ -46,16 +46,45 @@ else:
 st.markdown(custom_css, unsafe_allow_html=True)
 
 # ✅ Functions
-def add_keyword(keyword):
-    if keyword not in st.session_state.selected_keywords:
-        st.session_state.selected_keywords.append(keyword)
+def update_keywords():
+    selected = []
+    if st.session_state.get("chk_bp"):
+        selected.append("Abnormal BP")
+    if st.session_state.get("chk_pulse_fast") or st.session_state.get("chk_pulse_slow"):
+        if "Abnormal Pulse" not in selected:
+            selected.append("Abnormal Pulse")
+    if st.session_state.get("chk_temp"):
+        selected.append("Abnormal Temperature")
+    if st.session_state.get("chk_resp"):
+        selected.append("Abnormal Respiration")
+    if st.session_state.get("chk_bmi_25"):
+        selected.append("BMI ≥ 25")
+    if st.session_state.get("chk_bmi_28"):
+        selected.append("BMI ≥ 28")
+    if st.session_state.get("cbc_main"):
+        cbc_text = "Abnormal CBC"
+        cbc_items = []
+        if st.session_state.get("chk_hb"):
+            cbc_items.append("Hb")
+        if st.session_state.get("chk_hct"):
+            cbc_items.append("Hct")
+        if cbc_items:
+            cbc_text += " (" + ", ".join(cbc_items) + ")"
+        selected.append(cbc_text)
+    if st.session_state.get("pe_input"):
+        selected.append(f"Abnormal PE ({st.session_state.pe_input})")
+    st.session_state.selected_keywords = selected
 
 def clear_keywords():
     st.session_state.selected_keywords = []
     st.session_state.cbc_selected = False
     st.session_state.cbc_subitems = []
+    for key in list(st.session_state.keys()):
+        if key.startswith("chk_") or key == "cbc_main" or key == "pe_input":
+            st.session_state[key] = False if key.startswith("chk_") or key == "cbc_main" else ""
 
 # ✅ Consult keyword box + buttons
+update_keywords()
 combined_text = "; ".join(st.session_state.selected_keywords)
 
 with st.container():
@@ -100,48 +129,18 @@ with st.expander("คลิกเพื่อเลือกข้อมูล",
         col_vs, col_bmi, col_pe = st.columns(3)
 
         with col_vs:
-            box_color = "#2c2c2c" if st.session_state.theme_mode == "dark" else "#ffffff"
-            st.markdown(f"""
-                <div style="background-color:{box_color}; border:1px solid #888; border-radius:8px; padding:10px;">
-                <strong>🔹 Vital signs</strong><br><br>
-            """, unsafe_allow_html=True)
-
-            st.button("BP สูง", on_click=lambda: add_keyword("Abnormal BP"))
-            st.button("ชีพจรเร็ว", on_click=lambda: add_keyword("Abnormal Pulse"))
-            st.button("ชีพจรช้า", on_click=lambda: add_keyword("Abnormal Pulse"))
-            st.button("อุณหภูมิร่างกายผิดปกติ", on_click=lambda: add_keyword("Abnormal Temperature"))
-            st.button("การหายใจผิดปกติ", on_click=lambda: add_keyword("Abnormal Respiration"))
-
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.checkbox("BP สูง", key="chk_bp", on_change=update_keywords)
+            st.checkbox("ชีพจรเร็ว", key="chk_pulse_fast", on_change=update_keywords)
+            st.checkbox("ชีพจรช้า", key="chk_pulse_slow", on_change=update_keywords)
+            st.checkbox("อุณหภูมิร่างกายผิดปกติ", key="chk_temp", on_change=update_keywords)
+            st.checkbox("การหายใจผิดปกติ", key="chk_resp", on_change=update_keywords)
 
         with col_bmi:
-            box_color = "#2c2c2c" if st.session_state.theme_mode == "dark" else "#ffffff"
-            st.markdown(f"""
-                <div style="background-color:{box_color}; border:1px solid #888; border-radius:8px; padding:10px;">
-                <strong>🔹 BMI</strong><br><br>
-            """, unsafe_allow_html=True)
-
-            st.button("BMI ≥ 25", on_click=lambda: add_keyword("BMI ≥ 25"))
-            st.button("BMI ≥ 28", on_click=lambda: add_keyword("BMI ≥ 28"))
-
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.checkbox("BMI ≥ 25", key="chk_bmi_25", on_change=update_keywords)
+            st.checkbox("BMI ≥ 28", key="chk_bmi_28", on_change=update_keywords)
 
         with col_pe:
-            box_color = "#2c2c2c" if st.session_state.theme_mode == "dark" else "#ffffff"
-            st.markdown(f"""
-                <div style="background-color:{box_color}; border:1px solid #888; border-radius:8px; padding:10px;">
-                <strong>🔹 การตรวจร่างกาย (PE)</strong><br><br>
-            """, unsafe_allow_html=True)
-
-            pe_input = st.text_input("พิมพ์ผลตรวจร่างกาย", placeholder="พิมพ์ภาษาไทยหรืออังกฤษ")
-
-            if st.button("➕ เพิ่ม PE"):
-                if pe_input.strip():
-                    keyword_pe = f"Abnormal PE ({pe_input.strip()})"
-                    if keyword_pe not in st.session_state.selected_keywords:
-                        st.session_state.selected_keywords.append(keyword_pe)
-
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.text_input("พิมพ์ผลตรวจร่างกาย", key="pe_input", on_change=update_keywords)
 
 # ✅ Section 2: Lab results
 st.markdown(f"""
@@ -153,42 +152,17 @@ st.markdown(f"""
 
 with st.expander("คลิกเพื่อเลือกข้อมูล (Lab results)", expanded=True):
     with st.container():
-        # แถวบน: CBC | Metabolic | Liver function
         col_cbc, col_met, col_liver = st.columns(3)
-
         with col_cbc:
-            box_color = "#2c2c2c" if st.session_state.theme_mode == "dark" else "#ffffff"
-            st.markdown(f"""<div style="background-color:{box_color}; border:1px solid #888; border-radius:8px; padding:10px;"><strong>🔹 ความสมบูรณ์ของเม็ดเลือด (CBC)</strong><br><br>""", unsafe_allow_html=True)
-            if st.button("เลือก CBC"):
-                if "Abnormal CBC" not in st.session_state.selected_keywords:
-                    st.session_state.selected_keywords.append("Abnormal CBC")
-                st.session_state.cbc_selected = True
-
-            if st.session_state.cbc_selected:
-                st.markdown("**หัวข้อย่อย:**")
-                if st.button("Hemoglobin (Hb)"):
-                    if "Hb" not in st.session_state.cbc_subitems:
-                        st.session_state.cbc_subitems.append("Hb")
-                if st.button("Hematocrit (Hct)"):
-                    if "Hct" not in st.session_state.cbc_subitems:
-                        st.session_state.cbc_subitems.append("Hct")
-
-                # อัปเดต CBC keyword ด้วย subitems
-                base = "Abnormal CBC"
-                if st.session_state.cbc_subitems:
-                    base += " (" + ", ".join(st.session_state.cbc_subitems) + ")"
-                # ลบรายการเก่าแล้วเพิ่มใหม่
-                st.session_state.selected_keywords = [kw for kw in st.session_state.selected_keywords if not kw.startswith("Abnormal CBC")]
-                st.session_state.selected_keywords.append(base)
-
-            st.markdown("</div>", unsafe_allow_html=True)
-
+            st.checkbox("ความสมบูรณ์ของเม็ดเลือด (CBC)", key="cbc_main", on_change=update_keywords)
+            if st.session_state.get("cbc_main"):
+                st.checkbox("Hemoglobin (Hb)", key="chk_hb", on_change=update_keywords)
+                st.checkbox("Hematocrit (Hct)", key="chk_hct", on_change=update_keywords)
         with col_met:
             st.markdown("🔹 Metabolic")
         with col_liver:
             st.markdown("🔹 การทำงานของตับ (Liver function test)")
 
-        # แถวล่าง: Kidney | Thyroid | Tumor
         col_kidney, col_thyroid, col_tumor = st.columns(3)
         with col_kidney:
             st.markdown("🔹 การทำงานของไตและเกลือแร่")
