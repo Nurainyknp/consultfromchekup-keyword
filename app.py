@@ -151,20 +151,31 @@ def update_keywords():
     # Pap smear
     if st.session_state.get("chk_pap"): selected.append("Abnormal Pap smear")
 
+    # Radiology
+    if st.session_state.get("chk_cxr"):
+        cxr_detail = st.session_state.get("txt_cxr", "").strip()
+        selected.append(f"Abnormal CXR ({cxr_detail})" if cxr_detail else "Abnormal CXR")
+
+    if st.session_state.get("chk_us"):
+        us_detail = st.session_state.get("txt_us", "").strip()
+        selected.append(f"Abnormal US ({us_detail})" if us_detail else "Abnormal US")
+
     st.session_state.selected_keywords = selected
 
 # ✅ Clear Button
 def clear_keywords():
     for k in list(st.session_state.keys()):
-        if k.startswith("chk_") or k in ["cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main", "ua_main"]:
+        if k.startswith("chk_") or k in [
+            "cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main",
+            "ua_main", "txt_cxr", "txt_us"
+        ]:
             st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
 
-# ✅ เรียกอัปเดตข้อความ
+# ✅ Show result box
 update_keywords()
 combined_text = "; ".join(st.session_state.selected_keywords)
 
-# ✅ กล่องแสดงผล + ปุ่มคัดลอก / ล้าง
 bg_color = "#333" if st.session_state.theme_mode == "dark" else "#f0f2f6"
 st.markdown(f"<div style='background-color:{bg_color}; padding:15px; border-radius:10px; margin-bottom:20px;'>"
             "<h3>📝 ระบบช่วยเขียนข้อความ consult</h3>", unsafe_allow_html=True)
@@ -185,7 +196,7 @@ with c3:
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ✅ หัวข้อ 1: Vital Signs & BMI & PE
+# ✅ Section 1: Vital signs and PE
 st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>1. ผล Vital signs และการตรวจร่างกาย</div>", unsafe_allow_html=True)
 
 with st.expander("คลิกเพื่อเลือกข้อมูล (Vital signs และ PE)", expanded=False):
@@ -205,7 +216,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     with col_pe:
         st.text_input("พิมพ์ผลตรวจร่างกาย", key="pe_input", on_change=update_keywords)
 
-# ✅ หัวข้อ 2: Lab results
+# ✅ Section 2: Lab results
 st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>2. ผลการตรวจทางห้องปฏิบัติการ</div>", unsafe_allow_html=True)
 
 with st.expander("คลิกเพื่อเลือกข้อมูล (Lab results)", expanded=False):
@@ -251,7 +262,6 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("Blood urea nitrogen (BUN)", key="chk_bun", on_change=update_keywords)
             st.checkbox("Creatinine", key="chk_creatinine", on_change=update_keywords)
             st.checkbox("eGFR", key="chk_egfr", on_change=update_keywords)
-
         st.checkbox("การตรวจปัสสาวะ (Urinalysis: UA)", key="ua_main", on_change=update_keywords)
         if st.session_state.get("ua_main"):
             st.checkbox("White blood cell (WBC)", key="chk_ua_wbc", on_change=update_keywords)
@@ -265,7 +275,6 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("TSH", key="chk_tsh", on_change=update_keywords)
             st.checkbox("Free T3", key="chk_ft3", on_change=update_keywords)
             st.checkbox("Free T4", key="chk_ft4", on_change=update_keywords)
-
         st.checkbox("วิตามินดี (Vitamin D total)", key="chk_vitd", on_change=update_keywords)
 
     with col_other:
@@ -274,6 +283,17 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
         st.checkbox("CA-125", key="chk_ca125", on_change=update_keywords)
         st.checkbox("CA 19-9", key="chk_ca199", on_change=update_keywords)
         st.checkbox("PSA", key="chk_psa", on_change=update_keywords)
-
         st.checkbox("การตรวจอุจจาระ", key="chk_stool", on_change=update_keywords)
         st.checkbox("Pap smear", key="chk_pap", on_change=update_keywords)
+
+# ✅ Section 3: Radiology results
+st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>3. ผลตรวจทางรังสีวิทยา</div>", unsafe_allow_html=True)
+
+with st.expander("คลิกเพื่อเลือกข้อมูล (Radiology results)", expanded=False):
+    col_cxr, col_us = st.columns([1, 1])
+    with col_cxr:
+        st.checkbox("Chest PA", key="chk_cxr", on_change=update_keywords)
+        st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_cxr", on_change=update_keywords)
+    with col_us:
+        st.checkbox("Abdominal ultrasound", key="chk_us", on_change=update_keywords)
+        st.text_input("จำเป็นต้องระบุอวัยวะ", key="txt_us", on_change=update_keywords)
