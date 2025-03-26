@@ -290,7 +290,17 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("BMI ≥ 27", key="chk_bmi_28", on_change=update_keywords, disabled=disable_bmi28)
             if st.session_state.get("chk_bmi_28"):
                 st.markdown(
-                    '<span style="color: red; font-weight: bold; font-size: 24px;">ส่งทันที</span>',
+                    '''
+                    <style>
+                    .blinking {
+                      animation: blinker 1s linear infinite;
+                    }
+                    @keyframes blinker {
+                      50% { opacity: 0; }
+                    }
+                    </style>
+                    <span class="blinking" style="color: red; font-weight: bold; font-size: 24px;">ส่งทันที</span>
+                    ''',
                     unsafe_allow_html=True
                 )
 
