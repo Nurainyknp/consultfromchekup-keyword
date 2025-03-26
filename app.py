@@ -58,9 +58,31 @@ def update_keywords():
     if st.session_state.get("chk_bmi_28"): 
         selected.append("BMI ≥ 27")
 
-    # CBC (แสดง keyword เป็น "Abnormal CBC")
+    # CBC: รวบรวมรายละเอียดของ CBC หากเลือกตัวเลือก CBC
     if st.session_state.get("cbc_main"):
-        selected.append("Abnormal CBC")
+        cbc_details = []
+        if st.session_state.get("chk_anemia"):
+            cbc_details.append("Anemia")
+        if st.session_state.get("chk_hb"):
+            cbc_details.append("Hemoglobin (Hb)")
+        if st.session_state.get("chk_hct"):
+            cbc_details.append("Hematocrit (Hct)")
+        if st.session_state.get("chk_rbc"):
+            cbc_details.append("Red blood cell (RBC)")
+        if st.session_state.get("chk_wbc"):
+            cbc_details.append("White blood cell (WBC)")
+        if st.session_state.get("chk_plt"):
+            cbc_details.append("Platelet count (PLT)")
+        if st.session_state.get("chk_neutro"):
+            cbc_details.append("Neutrophil")
+        if st.session_state.get("chk_lymph"):
+            cbc_details.append("Lymphocytes")
+        if st.session_state.get("chk_eos"):
+            cbc_details.append("Eosinophils")
+        if cbc_details:
+            selected.append("Abnormal CBC (" + ", ".join(cbc_details) + ")")
+        else:
+            selected.append("Abnormal CBC")
 
     # Sugar
     sugar_items = []
@@ -263,7 +285,8 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 # ✅ Section 1: Vital signs and PE
 st.markdown(
-    f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
+    f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; "
+    "padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
     "1. ผล Vital signs และการตรวจร่างกาย</div>", 
     unsafe_allow_html=True
 )
@@ -324,7 +347,8 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
 
 # ✅ Section 2: Lab results
 st.markdown(
-    f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
+    f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; "
+    "padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
     "2. ผลการตรวจทางห้องปฏิบัติการ</div>", 
     unsafe_allow_html=True
 )
@@ -335,6 +359,8 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     with col_cbc:
         st.checkbox("ความสมบูรณ์ของเม็ดเลือด (CBC)", key="cbc_main", on_change=update_keywords)
         if st.session_state.get("cbc_main"):
+            # เพิ่ม checkbox ซีด (Anemia) ก่อน Hemoglobin (Hb)
+            st.checkbox("ซีด (Anemia)", key="chk_anemia", on_change=update_keywords)
             st.checkbox("Hemoglobin (Hb)", key="chk_hb", on_change=update_keywords)
             st.checkbox("Hematocrit (Hct)", key="chk_hct", on_change=update_keywords)
             st.checkbox("Red blood cell (RBC)", key="chk_rbc", on_change=update_keywords)
