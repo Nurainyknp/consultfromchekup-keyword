@@ -212,7 +212,7 @@ def update_keywords():
             selected.append("Abnormal")
 
     # -------------------------------
-    # Section 5: Health issues outside tests (Consult)
+    # Section 5: Consult
     if st.session_state.get("chk_consult"):
         text = st.session_state.get("txt_consult", "").strip()
         if text:
@@ -263,8 +263,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 # ✅ Section 1: Vital signs and PE
 st.markdown(
-    f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; "
-    "padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
+    f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
     "1. ผล Vital signs และการตรวจร่างกาย</div>", 
     unsafe_allow_html=True
 )
@@ -273,14 +272,29 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     col_vs, col_bmi, col_pe = st.columns(3)
 
     with col_vs:
-        st.checkbox("BP สูง", key="chk_bp", on_change=update_keywords)
+        # เปลี่ยน label BP เป็น "SBP ≥ 140 หรือ DBP ≥ 90"
+        st.checkbox("SBP ≥ 140 หรือ DBP ≥ 90", key="chk_bp", on_change=update_keywords)
+        if st.session_state.get("chk_bp"):
+            st.markdown(
+                '''
+                <style>
+                .blinking {
+                  animation: blinker 1s linear infinite;
+                }
+                @keyframes blinker {
+                  50% { opacity: 0; }
+                }
+                </style>
+                <span class="blinking" style="color: red; font-weight: bold; font-size: 24px;">ส่งทันที</span>
+                ''',
+                unsafe_allow_html=True
+            )
         st.checkbox("ชีพจรเร็ว", key="chk_pulse_fast", on_change=update_keywords)
         st.checkbox("ชีพจรช้า", key="chk_pulse_slow", on_change=update_keywords)
         st.checkbox("อุณหภูมิร่างกายผิดปกติ", key="chk_temp", on_change=update_keywords)
         st.checkbox("การหายใจผิดปกติ", key="chk_resp", on_change=update_keywords)
 
     with col_bmi:
-        # ใช้ columns ภายในเพื่อให้จัดเรียงคู่กัน
         col_bmi_1, col_bmi_2 = st.columns([1, 1])
         with col_bmi_1:
             disable_bmi25 = st.session_state.get("chk_bmi_28", False)
@@ -310,8 +324,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
 
 # ✅ Section 2: Lab results
 st.markdown(
-    f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; "
-    "padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
+    f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
     "2. ผลการตรวจทางห้องปฏิบัติการ</div>", 
     unsafe_allow_html=True
 )
@@ -333,12 +346,45 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
 
     with col_met:
         st.markdown("🔹 Metabolic")
+        # Glucose checkbox
         st.checkbox("Glucose (Fasting/Non-Fasting)", key="chk_glu", on_change=update_keywords)
+        if st.session_state.get("chk_glu"):
+            st.markdown(
+                '''
+                <span style="color: red; font-weight: bold; font-size: 24px;">ถ้า≥ 126</span>
+                <span class="blinking" style="color: red; font-weight: bold; font-size: 24px; margin-left: 10px;">ส่งทันที</span>
+                <style>
+                .blinking {
+                  animation: blinker 1s linear infinite;
+                }
+                @keyframes blinker {
+                  50% { opacity: 0; }
+                }
+                </style>
+                ''',
+                unsafe_allow_html=True
+            )
         st.checkbox("HbA1C", key="chk_hba1c", on_change=update_keywords)
         st.checkbox("Total Cholesterol", key="chk_tc", on_change=update_keywords)
         st.checkbox("Triglyceride", key="chk_trig", on_change=update_keywords)
         st.checkbox("HDL-C", key="chk_hdl", on_change=update_keywords)
         st.checkbox("LDL-C", key="chk_ldl", on_change=update_keywords)
+        if st.session_state.get("chk_ldl"):
+            st.markdown(
+                '''
+                <span style="color: red; font-weight: bold; font-size: 24px;">ถ้า≥ 190</span>
+                <span class="blinking" style="color: red; font-weight: bold; font-size: 24px; margin-left: 10px;">ส่งทันที</span>
+                <style>
+                .blinking {
+                  animation: blinker 1s linear infinite;
+                }
+                @keyframes blinker {
+                  50% { opacity: 0; }
+                }
+                </style>
+                ''',
+                unsafe_allow_html=True
+            )
         st.checkbox("Uric Acid", key="chk_uric", on_change=update_keywords)
         st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
         st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
@@ -385,8 +431,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
 
 # ✅ Section 3: Radiology results
 st.markdown(
-    f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; "
-    "padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
+    f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
     "3. ผลตรวจทางรังสีวิทยา</div>", 
     unsafe_allow_html=True
 )
@@ -408,8 +453,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
 
 # ✅ Section 4: Other investigations
 st.markdown(
-    f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; "
-    "padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
+    f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
     "4. การตรวจอื่น ๆ</div>", 
     unsafe_allow_html=True
 )
@@ -429,10 +473,9 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
         st.checkbox("ผลผิดปกติอื่น ๆ", key="chk_other_investigation", on_change=update_keywords)
         st.text_input("จำเป็นต้องระบุ", key="txt_other_investigation", on_change=update_keywords)
 
-# ✅ Section 5: ปัญหาสุขภาพอื่น ๆ นอกเหนือรายการตรวจ
+# ✅ Section 5: Consult
 st.markdown(
-    f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; "
-    "padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
+    f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
     "5. ปัญหาสุขภาพอื่น ๆ นอกเหนือรายการตรวจ</div>", 
     unsafe_allow_html=True
 )
