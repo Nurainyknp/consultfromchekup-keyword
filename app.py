@@ -53,18 +53,9 @@ def update_keywords():
     if st.session_state.get("chk_bmi_25"): selected.append("BMI ≥ 25.0-26.99")
     if st.session_state.get("chk_bmi_28"): selected.append("BMI ≥ 27")
 
-    # CBC
+    # CBC (ปรับให้แสดง keyword เป็น "Abnormal CBC")
     if st.session_state.get("cbc_main"):
-        cbc_items = []
-        for k, label in {
-            "chk_hb": "Hb", "chk_hct": "Hct", "chk_rbc": "RBC", "chk_wbc": "WBC",
-            "chk_plt": "PLT", "chk_neutro": "Neutrophils", "chk_lymph": "Lymphocytes",
-            "chk_eos": "Eosinophils"
-        }.items():
-            if st.session_state.get(k): 
-                cbc_items.append(label)
-        if cbc_items:
-            selected.append("Abnormal CBC (" + ", ".join(cbc_items) + ")")
+        selected.append("Abnormal CBC")
 
     # Sugar
     sugar_items = []
@@ -157,7 +148,6 @@ def update_keywords():
     if st.session_state.get("chk_cxr"):
         cxr_detail = st.session_state.get("txt_cxr", "").strip()
         selected.append(f"Abnormal CXR ({cxr_detail})" if cxr_detail else "Abnormal CXR")
-
     if st.session_state.get("chk_us"):
         us_detail = st.session_state.get("txt_us", "").strip()
         selected.append(f"Abnormal US ({us_detail})" if us_detail else "Abnormal US")
@@ -230,8 +220,9 @@ st.markdown(f"<div style='background-color:{bg_color}; padding:15px; border-radi
 
 c1, c2, c3 = st.columns([2, 6, 2])
 with c1:
+    # ปรับให้กดปุ่มก็ทำการคัดลอกทันที โดยไม่มี alert pop-up
     components.html(
-        f"<button onclick=\"navigator.clipboard.writeText('{combined_text}'); alert('คัดลอกข้อความเรียบร้อยแล้ว!');\""
+        f"<button onclick=\"navigator.clipboard.writeText('{combined_text}');\""
         "style=\"padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;\">"
         "📋 คัดลอกข้อความ</button>",
         height=60,
@@ -260,9 +251,21 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     with col_bmi:
         st.checkbox("BMI ≥ 25.0-26.99", key="chk_bmi_25", on_change=update_keywords)
         st.checkbox("BMI ≥ 27", key="chk_bmi_28", on_change=update_keywords)
+        if st.session_state.get("chk_bmi_28"):
+            st.markdown("""
+                <div style="color: red; font-weight:bold; animation: blinker 1s linear infinite; margin-top:5px;">
+                    ส่งทันที
+                </div>
+                <style>
+                @keyframes blinker {
+                    50% { opacity: 0; }
+                }
+                </style>
+                """, unsafe_allow_html=True)
 
     with col_pe:
-        st.text_input("พิมพ์ผลตรวจร่างกาย", key="pe_input", on_change=update_keywords)
+        st.markdown("**โปรดระบุเมื่อการตรวจร่างกายผิดปกติ**")
+        st.text_input("", key="pe_input", on_change=update_keywords)
 
 # ✅ Section 2: Lab results
 st.markdown(f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>2. ผลการตรวจทางห้องปฏิบัติการ</div>", unsafe_allow_html=True)
