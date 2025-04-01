@@ -567,16 +567,18 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     with col_est:
         st.checkbox("Exercise stress test (EST)", key="chk_est", on_change=update_keywords)
         st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_est", on_change=update_keywords)
-        # เพิ่มการตรวจสมรรถภาพการได้ยิน
-        st.checkbox("การตรวจสมรรถภาพการได้ยิน", key="chk_audiometry", on_change=update_keywords)
-        st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_audiometry", on_change=update_keywords)
-        # เพิ่มการตรวจตา/การตรวจตาทางอาชีวอนามัย
-        st.checkbox("การตรวจตา/การตรวจตาทางอาชีวอนามัย", key="chk_vision", on_change=update_keywords)
-        st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_vision", on_change=update_keywords)
     
     with col_other_invest:
         st.checkbox("ผลผิดปกติอื่น ๆ", key="chk_other_investigation", on_change=update_keywords)
         st.text_input("จำเป็นต้องระบุ", key="txt_other_investigation", on_change=update_keywords)
+# จัดให้อยู่ในแถวเดียวกัน โดยแบ่งเป็น 2 คอลัมน์
+col_audiometry, col_vision = st.columns(2)
+with col_audiometry:
+    st.checkbox("การตรวจสมรรถภาพการได้ยิน", key="chk_audiometry", on_change=update_keywords)
+    st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_audiometry", on_change=update_keywords)
+with col_vision:
+    st.checkbox("การตรวจตา/การตรวจตาทางอาชีวอนามัย", key="chk_vision", on_change=update_keywords)
+    st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_vision", on_change=update_keywords)
 
 # ✅ Section 5: Consult
 st.markdown(
