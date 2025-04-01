@@ -226,6 +226,22 @@ def update_keywords():
         else:
             selected.append("Abnormal EST")
             
+    # เพิ่ม: การตรวจสมรรถภาพการได้ยิน
+    if st.session_state.get("chk_audiometry"):
+        audiometry_detail = st.session_state.get("txt_audiometry", "").strip()
+        if audiometry_detail:
+            selected.append("Abnormal Audiometry (" + audiometry_detail + ")")
+        else:
+            selected.append("Abnormal Audiometry")
+            
+    # เพิ่ม: การตรวจตา/การตรวจตาทางอาชีวอนามัย
+    if st.session_state.get("chk_vision"):
+        vision_detail = st.session_state.get("txt_vision", "").strip()
+        if vision_detail:
+            selected.append("Abnormal Vision (" + vision_detail + ")")
+        else:
+            selected.append("Abnormal Vision")
+            
     if st.session_state.get("chk_other_investigation"):
         text = st.session_state.get("txt_other_investigation", "").strip()
         if text:
@@ -272,7 +288,8 @@ def clear_keywords():
         if k.startswith("chk_") or k in [
             "cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main",
             "ua_main", "txt_cxr", "txt_us",
-            "txt_12lead", "txt_est", "txt_other_investigation", "txt_consult", "radio_birads"
+            "txt_12lead", "txt_est", "txt_other_investigation", "txt_consult", "radio_birads",
+            "txt_audiometry", "txt_vision"
         ]:
             st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
@@ -550,6 +567,12 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     with col_est:
         st.checkbox("Exercise stress test (EST)", key="chk_est", on_change=update_keywords)
         st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_est", on_change=update_keywords)
+        # เพิ่มการตรวจสมรรถภาพการได้ยิน
+        st.checkbox("การตรวจสมรรถภาพการได้ยิน", key="chk_audiometry", on_change=update_keywords)
+        st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_audiometry", on_change=update_keywords)
+        # เพิ่มการตรวจตา/การตรวจตาทางอาชีวอนามัย
+        st.checkbox("การตรวจตา/การตรวจตาทางอาชีวอนามัย", key="chk_vision", on_change=update_keywords)
+        st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_vision", on_change=update_keywords)
     
     with col_other_invest:
         st.checkbox("ผลผิดปกติอื่น ๆ", key="chk_other_investigation", on_change=update_keywords)
