@@ -1,21 +1,34 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# ✅ Wide layout + Theme session
+# ✅ ตั้งค่า layout แบบ Wide
 st.set_page_config(layout="wide")
+
+# ✅ นำฟอนต์ที่รองรับภาษาไทย (Sarabun) จาก Google Fonts มาใช้งาน
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
+    body, .block-container {
+        font-family: 'Sarabun', sans-serif;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 if "theme_mode" not in st.session_state:
     st.session_state.theme_mode = "light"
 if "selected_keywords" not in st.session_state:
     st.session_state.selected_keywords = []
 
-# ✅ Theme toggle button
+# ✅ ปุ่มสลับ Theme
 col1, col2, col3 = st.columns([10, 1, 2])
 with col3:
     theme = st.radio("โหมด", ["🌞 Light", "🌙 Night"], horizontal=True, label_visibility="collapsed")
     st.session_state.theme_mode = "dark" if "Night" in theme else "light"
 
-# ✅ Custom CSS
+# ✅ Custom CSS สำหรับโหมด Dark
 if st.session_state.theme_mode == "dark":
     custom_css = """
         <style>
@@ -38,24 +51,24 @@ if st.session_state.theme_mode == "dark":
     """
     st.markdown(custom_css, unsafe_allow_html=True)
 
-# ✅ Update Keywords
+# ✅ ฟังก์ชันอัพเดท Keywords
 def update_keywords():
     selected = []
 
     # Vital signs
-    if st.session_state.get("chk_bp"): 
+    if st.session_state.get("chk_bp"):
         selected.append("Abnormal BP")
     if st.session_state.get("chk_pulse_fast") or st.session_state.get("chk_pulse_slow"):
         selected.append("Abnormal Pulse")
-    if st.session_state.get("chk_temp"): 
+    if st.session_state.get("chk_temp"):
         selected.append("Abnormal Temperature")
-    if st.session_state.get("chk_resp"): 
+    if st.session_state.get("chk_resp"):
         selected.append("Abnormal Respiration")
 
     # BMI
-    if st.session_state.get("chk_bmi_25"): 
+    if st.session_state.get("chk_bmi_25"):
         selected.append("BMI ≥ 25.0-26.99")
-    if st.session_state.get("chk_bmi_28"): 
+    if st.session_state.get("chk_bmi_28"):
         selected.append("BMI ≥ 27")
 
     # CBC: รวบรวมรายละเอียดของ CBC หากเลือกตัวเลือก CBC
@@ -86,32 +99,32 @@ def update_keywords():
 
     # Sugar
     sugar_items = []
-    if st.session_state.get("chk_glu"): 
+    if st.session_state.get("chk_glu"):
         sugar_items.append("Glucose")
-    if st.session_state.get("chk_hba1c"): 
+    if st.session_state.get("chk_hba1c"):
         sugar_items.append("HbA1C")
     if sugar_items:
         selected.append("Abnormal Sugar (" + ", ".join(sugar_items) + ")")
 
     # Lipid
     lipid_items = []
-    if st.session_state.get("chk_tc"): 
+    if st.session_state.get("chk_tc"):
         lipid_items.append("TC")
-    if st.session_state.get("chk_trig"): 
+    if st.session_state.get("chk_trig"):
         lipid_items.append("Trig")
-    if st.session_state.get("chk_hdl"): 
+    if st.session_state.get("chk_hdl"):
         lipid_items.append("HDL")
-    if st.session_state.get("chk_ldl"): 
+    if st.session_state.get("chk_ldl"):
         lipid_items.append("LDL-C")
     if lipid_items:
         selected.append("Abnormal Lipid (" + ", ".join(lipid_items) + ")")
 
     # Metabolic
-    if st.session_state.get("chk_uric"): 
+    if st.session_state.get("chk_uric"):
         selected.append("Abnormal Uric")
-    if st.session_state.get("chk_urinecre"): 
+    if st.session_state.get("chk_urinecre"):
         selected.append("Abnormal Urine cre.")
-    if st.session_state.get("chk_microalb"): 
+    if st.session_state.get("chk_microalb"):
         selected.append("Abnormal Microalbumin")
 
     # LFT
@@ -120,7 +133,7 @@ def update_keywords():
         for k, label in {
             "chk_ast": "AST", "chk_alt": "ALT", "chk_alp": "ALP", "chk_ggt": "GGT"
         }.items():
-            if st.session_state.get(k): 
+            if st.session_state.get(k):
                 lft_items.append(label)
         if lft_items:
             selected.append("Abnormal LFT (" + ", ".join(lft_items) + ")")
@@ -134,11 +147,11 @@ def update_keywords():
     # Kidney
     if st.session_state.get("kidney_main"):
         kidney_items = []
-        if st.session_state.get("chk_bun"): 
+        if st.session_state.get("chk_bun"):
             kidney_items.append("BUN")
-        if st.session_state.get("chk_creatinine"): 
+        if st.session_state.get("chk_creatinine"):
             kidney_items.append("Creatinine")
-        if st.session_state.get("chk_egfr"): 
+        if st.session_state.get("chk_egfr"):
             kidney_items.append("eGFR")
         if kidney_items:
             selected.append("Abnormal kidney (" + ", ".join(kidney_items) + ")")
@@ -148,11 +161,11 @@ def update_keywords():
     # Thyroid
     if st.session_state.get("thyroid_main"):
         thyroid_items = []
-        if st.session_state.get("chk_tsh"): 
+        if st.session_state.get("chk_tsh"):
             thyroid_items.append("TSH")
-        if st.session_state.get("chk_ft3"): 
+        if st.session_state.get("chk_ft3"):
             thyroid_items.append("Free T3")
-        if st.session_state.get("chk_ft4"): 
+        if st.session_state.get("chk_ft4"):
             thyroid_items.append("Free T4")
         if thyroid_items:
             selected.append("Abnormal thyroid (" + ", ".join(thyroid_items) + ")")
@@ -160,25 +173,25 @@ def update_keywords():
             selected.append("Abnormal thyroid")
 
     # Tumor markers
-    if st.session_state.get("chk_afp"): 
+    if st.session_state.get("chk_afp"):
         selected.append("Abnormal AFP")
-    if st.session_state.get("chk_ca125"): 
+    if st.session_state.get("chk_ca125"):
         selected.append("Abnormal CA-125")
-    if st.session_state.get("chk_ca199"): 
+    if st.session_state.get("chk_ca199"):
         selected.append("Abnormal CA 19-9")
-    if st.session_state.get("chk_psa"): 
+    if st.session_state.get("chk_psa"):
         selected.append("Abnormal PSA")
 
     # UA
     if st.session_state.get("ua_main"):
         ua_items = []
-        if st.session_state.get("chk_ua_wbc"): 
+        if st.session_state.get("chk_ua_wbc"):
             ua_items.append("WBC")
-        if st.session_state.get("chk_ua_rbc"): 
+        if st.session_state.get("chk_ua_rbc"):
             ua_items.append("RBC")
-        if st.session_state.get("chk_ua_protein"): 
+        if st.session_state.get("chk_ua_protein"):
             ua_items.append("Protein")
-        if st.session_state.get("chk_ua_glucose"): 
+        if st.session_state.get("chk_ua_glucose"):
             ua_items.append("Glucose")
         if ua_items:
             selected.append("Abnormal UA (" + ", ".join(ua_items) + ")")
@@ -186,15 +199,15 @@ def update_keywords():
             selected.append("Abnormal UA")
 
     # Vitamin D
-    if st.session_state.get("chk_vitd"): 
+    if st.session_state.get("chk_vitd"):
         selected.append("Abnormal vit D")
 
     # Stool
-    if st.session_state.get("chk_stool"): 
+    if st.session_state.get("chk_stool"):
         selected.append("Abnormal Stool")
 
     # Pap smear
-    if st.session_state.get("chk_pap"): 
+    if st.session_state.get("chk_pap"):
         selected.append("Abnormal Pap smear")
 
     # Radiology: CXR and US
@@ -260,7 +273,6 @@ def update_keywords():
     
     # -------------------------------
     # F/U Options: เพิ่ม keyword เมื่อเลือก F/U 3 เดือน หรือ F/U 6 เดือน
-    # รายการใน sections 1-5 (exclude F/U) ที่ใช้ตรวจสอบว่ามีการเลือกหรือไม่
     keys_for_fu = [
         "chk_bp", "chk_pulse_fast", "chk_pulse_slow", "chk_temp", "chk_resp",
         "chk_bmi_25", "chk_bmi_28", "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
@@ -282,7 +294,7 @@ def update_keywords():
 
     st.session_state.selected_keywords = selected
 
-# ✅ Clear Button
+# ✅ ฟังก์ชันสำหรับล้างข้อมูล Keywords
 def clear_keywords():
     for k in list(st.session_state.keys()):
         if k.startswith("chk_") or k in [
@@ -294,14 +306,14 @@ def clear_keywords():
             st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
 
-# ✅ Show result box
+# ✅ แสดงผลลัพธ์ของ consult
 update_keywords()
 combined_text = "; ".join(st.session_state.selected_keywords)
 
 bg_color = "#333" if st.session_state.theme_mode == "dark" else "#f0f2f6"
 st.markdown(
     f"<div style='background-color:{bg_color}; padding:15px; border-radius:10px; margin-bottom:20px;'>"
-    "<h3>📝 ระบบช่วยเขียนข้อความ consult</h3>", 
+    "<h3>📝 ระบบช่วยเขียนข้อความ consult</h3>",
     unsafe_allow_html=True
 )
 
@@ -324,7 +336,6 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 # ==================================================================
 # ✅ F/U Options (แทรกบรรทัดใหม่ก่อน Section 1)
-# รายการใน sections 1-5 ที่ใช้ตรวจสอบว่ามีการเลือก checkbox หรือไม่
 fu_keys = [
     "chk_bp", "chk_pulse_fast", "chk_pulse_slow", "chk_temp", "chk_resp",
     "chk_bmi_25", "chk_bmi_28", "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
@@ -338,7 +349,6 @@ fu_keys = [
     "chk_cxr", "chk_us", "chk_mammo", "chk_12lead", "chk_est", "chk_other_investigation",
     "chk_consult"
 ]
-# ถ้ายังไม่มีการเลือกใดๆ ใน sections 1-5 ให้ disable F/U checkboxes
 any_section_selected = any(st.session_state.get(key) for key in fu_keys)
 
 st.markdown("<hr>", unsafe_allow_html=True)
@@ -356,7 +366,7 @@ with col_fu2:
 st.markdown(
     f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; "
     "padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
-    "1. ผล Vital signs และการตรวจร่างกาย</div>", 
+    "1. ผล Vital signs และการตรวจร่างกาย</div>",
     unsafe_allow_html=True
 )
 
@@ -422,7 +432,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
 st.markdown(
     f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; "
     "padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
-    "2. ผลการตรวจทางห้องปฏิบัติการ</div>", 
+    "2. ผลการตรวจทางห้องปฏิบัติการ</div>",
     unsafe_allow_html=True
 )
 
@@ -445,7 +455,6 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
 
     with col_met:
         st.markdown("🔹 Metabolic")
-        # Glucose checkbox
         st.checkbox("Glucose (Fasting/Non-Fasting)", key="chk_glu", on_change=update_keywords)
         if st.session_state.get("chk_glu"):
             st.markdown(
@@ -531,7 +540,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
 # ✅ Section 3: Radiology results
 st.markdown(
     f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
-    "3. ผลตรวจทางรังสีวิทยา</div>", 
+    "3. ผลตรวจทางรังสีวิทยา</div>",
     unsafe_allow_html=True
 )
 
@@ -553,7 +562,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
 # ✅ Section 4: Other investigations
 st.markdown(
     f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
-    "4. การตรวจอื่น ๆ</div>", 
+    "4. การตรวจอื่น ๆ</div>",
     unsafe_allow_html=True
 )
 
@@ -583,7 +592,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
 # ✅ Section 5: Consult
 st.markdown(
     f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; padding:10px; border-radius:8px; font-weight:bold; font-size:18px; margin-top:10px;'>"
-    "5. ปัญหาสุขภาพอื่น ๆ นอกเหนือรายการตรวจ</div>", 
+    "5. ปัญหาสุขภาพอื่น ๆ นอกเหนือรายการตรวจ</div>",
     unsafe_allow_html=True
 )
 
