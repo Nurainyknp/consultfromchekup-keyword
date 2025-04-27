@@ -66,8 +66,6 @@ def update_keywords():
         selected.append("Abnormal Respiration")
 
     # BMI
-    if st.session_state.get("chk_bmi_25"):
-        selected.append("BMI ≥ 25.0-26.99")
     if st.session_state.get("chk_bmi_28"):
         selected.append("BMI ≥ 27")
 
@@ -275,7 +273,7 @@ def update_keywords():
     # F/U Options: เพิ่ม keyword เมื่อเลือก F/U 3 เดือน หรือ F/U 6 เดือน
     keys_for_fu = [
         "chk_bp", "chk_pulse_fast", "chk_pulse_slow", "chk_temp", "chk_resp",
-        "chk_bmi_25", "chk_bmi_28", "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
+        "chk_bmi_28", "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
         "chk_rbc", "chk_wbc", "chk_plt", "chk_neutro", "chk_lymph", "chk_eos",
         "chk_glu", "chk_hba1c", "chk_tc", "chk_trig", "chk_hdl", "chk_ldl",
         "chk_uric", "chk_urinecre", "chk_microalb", "lft_main", "chk_ast", "chk_alt",
@@ -338,7 +336,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 # ✅ F/U Options (แทรกบรรทัดใหม่ก่อน Section 1)
 fu_keys = [
     "chk_bp", "chk_pulse_fast", "chk_pulse_slow", "chk_temp", "chk_resp",
-    "chk_bmi_25", "chk_bmi_28", "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
+    "chk_bmi_28", "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
     "chk_rbc", "chk_wbc", "chk_plt", "chk_neutro", "chk_lymph", "chk_eos",
     "chk_glu", "chk_hba1c", "chk_tc", "chk_trig", "chk_hdl", "chk_ldl",
     "chk_uric", "chk_urinecre", "chk_microalb", "lft_main", "chk_ast", "chk_alt",
@@ -397,28 +395,22 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
         st.checkbox("การหายใจผิดปกติ", key="chk_resp", on_change=update_keywords)
 
     with col_bmi:
-        col_bmi_1, col_bmi_2 = st.columns([1, 1])
-        with col_bmi_1:
-            disable_bmi25 = st.session_state.get("chk_bmi_28", False)
-            st.checkbox("BMI ≥ 25.0-26.99", key="chk_bmi_25", on_change=update_keywords, disabled=disable_bmi25)
-        with col_bmi_2:
-            disable_bmi28 = st.session_state.get("chk_bmi_25", False)
-            st.checkbox("BMI ≥ 27", key="chk_bmi_28", on_change=update_keywords, disabled=disable_bmi28)
-            if st.session_state.get("chk_bmi_28"):
-                st.markdown(
-                    '''
-                    <style>
-                    .blinking {
-                      animation: blinker 1s linear infinite;
-                    }
-                    @keyframes blinker {
-                      50% { opacity: 0; }
-                    }
-                    </style>
-                    <span class="blinking" style="color: red; font-weight: bold; font-size: 24px;">ส่งทันที</span>
-                    ''',
-                    unsafe_allow_html=True
-                )
+        st.checkbox("BMI ≥ 27", key="chk_bmi_28", on_change=update_keywords)
+        if st.session_state.get("chk_bmi_28"):
+            st.markdown(
+                '''
+                <style>
+                .blinking {
+                  animation: blinker 1s linear infinite;
+                }
+                @keyframes blinker {
+                  50% { opacity: 0; }
+                }
+                </style>
+                <span class="blinking" style="color: red; font-weight: bold; font-size: 24px;">ส่งทันที</span>
+                ''',
+                unsafe_allow_html=True
+            )
 
     with col_pe:
         st.markdown("**โปรดระบุเมื่อการตรวจร่างกายผิดปกติ**")
