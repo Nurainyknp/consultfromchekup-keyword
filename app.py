@@ -58,16 +58,14 @@ def update_keywords():
     # Vital signs
     if st.session_state.get("chk_bp"):
         selected.append("Abnormal BP")
-    if st.session_state.get("chk_pulse_fast") or st.session_state.get("chk_pulse_slow"):
+    if st.session_state.get("chk_bp_fu1month"):
+        selected.append("Abnormal BP F/U 1 month")
+    if st.session_state.get("chk_pulse_abnormal"):
         selected.append("Abnormal Pulse")
     if st.session_state.get("chk_temp"):
-        selected.append("Abnormal Temperature")
+        selected.append("Fever")
     if st.session_state.get("chk_resp"):
         selected.append("Abnormal Respiration")
-
-    # BMI
-    if st.session_state.get("chk_bmi_28"):
-        selected.append("BMI ≥ 27")
 
     # CBC: รวบรวมรายละเอียดของ CBC หากเลือกตัวเลือก CBC
     if st.session_state.get("cbc_main"):
@@ -272,8 +270,8 @@ def update_keywords():
     # -------------------------------
     # F/U Options: เพิ่ม keyword เมื่อเลือก F/U 3 เดือน หรือ F/U 6 เดือน
     keys_for_fu = [
-        "chk_bp", "chk_pulse_fast", "chk_pulse_slow", "chk_temp", "chk_resp",
-        "chk_bmi_28", "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
+        "chk_bp", "chk_bp_fu1month", "chk_pulse_abnormal", "chk_temp", "chk_resp",
+        "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
         "chk_rbc", "chk_wbc", "chk_plt", "chk_neutro", "chk_lymph", "chk_eos",
         "chk_glu", "chk_hba1c", "chk_tc", "chk_trig", "chk_hdl", "chk_ldl",
         "chk_uric", "chk_urinecre", "chk_microalb", "lft_main", "chk_ast", "chk_alt",
@@ -335,8 +333,8 @@ st.markdown("</div>", unsafe_allow_html=True)
 # ==================================================================
 # ✅ F/U Options (แทรกบรรทัดใหม่ก่อน Section 1)
 fu_keys = [
-    "chk_bp", "chk_pulse_fast", "chk_pulse_slow", "chk_temp", "chk_resp",
-    "chk_bmi_28", "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
+    "chk_bp", "chk_bp_fu1month", "chk_pulse_abnormal", "chk_temp", "chk_resp",
+    "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
     "chk_rbc", "chk_wbc", "chk_plt", "chk_neutro", "chk_lymph", "chk_eos",
     "chk_glu", "chk_hba1c", "chk_tc", "chk_trig", "chk_hdl", "chk_ldl",
     "chk_uric", "chk_urinecre", "chk_microalb", "lft_main", "chk_ast", "chk_alt",
@@ -369,11 +367,10 @@ st.markdown(
 )
 
 with st.expander("คลิกเพื่อเลือกข้อมูล (Vital signs และ PE)", expanded=False):
-    col_vs, col_bmi, col_pe = st.columns(3)
+    col_vs, col_pe = st.columns(2)
 
     with col_vs:
-        # เปลี่ยน label BP เป็น "SBP ≥ 140 หรือ DBP ≥ 90"
-        st.checkbox("SBP ≥ 140 หรือ DBP ≥ 90", key="chk_bp", on_change=update_keywords)
+        st.checkbox("SBP ≥ 160 หรือ DBP ≥ 100", key="chk_bp", on_change=update_keywords)
         if st.session_state.get("chk_bp"):
             st.markdown(
                 '''
@@ -389,28 +386,11 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
                 ''',
                 unsafe_allow_html=True
             )
-        st.checkbox("ชีพจรเร็ว", key="chk_pulse_fast", on_change=update_keywords)
-        st.checkbox("ชีพจรช้า", key="chk_pulse_slow", on_change=update_keywords)
-        st.checkbox("อุณหภูมิร่างกายผิดปกติ", key="chk_temp", on_change=update_keywords)
-        st.checkbox("การหายใจผิดปกติ", key="chk_resp", on_change=update_keywords)
 
-    with col_bmi:
-        st.checkbox("BMI ≥ 27", key="chk_bmi_28", on_change=update_keywords)
-        if st.session_state.get("chk_bmi_28"):
-            st.markdown(
-                '''
-                <style>
-                .blinking {
-                  animation: blinker 1s linear infinite;
-                }
-                @keyframes blinker {
-                  50% { opacity: 0; }
-                }
-                </style>
-                <span class="blinking" style="color: red; font-weight: bold; font-size: 24px;">ส่งทันที</span>
-                ''',
-                unsafe_allow_html=True
-            )
+        st.checkbox("BP 140-159/90-99", key="chk_bp_fu1month", on_change=update_keywords)
+        st.checkbox("ชีพจรผิดปกติ", key="chk_pulse_abnormal", on_change=update_keywords)
+        st.checkbox("ไข้ (≥ 37.5 °C)", key="chk_temp", on_change=update_keywords)
+        st.checkbox("การหายใจผิดปกติ", key="chk_resp", on_change=update_keywords)
 
     with col_pe:
         st.markdown("**โปรดระบุเมื่อการตรวจร่างกายผิดปกติ**")
