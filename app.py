@@ -298,7 +298,7 @@ def clear_keywords():
             "txt_audiometry", "txt_vision", "radio_bp"
         ]:
             if k == "radio_bp":
-                st.session_state[k] = "ไม่เลือก"
+                st.session_state[k] = None
             else:
                 st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
@@ -372,12 +372,13 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
 
     with col_vs:
         if "radio_bp" not in st.session_state:
-            st.session_state.radio_bp = "ไม่เลือก"
+            st.session_state.radio_bp = None
 
         st.radio(
             "ความดันโลหิต",
-            ["ไม่เลือก", "SBP ≥ 160 หรือ DBP ≥ 100", "BP 140-159/90-99"],
+            ["SBP ≥ 160 หรือ DBP ≥ 100", "BP 140-159/90-99"],
             key="radio_bp",
+            index=None,
             on_change=update_keywords
         )
         if st.session_state.get("radio_bp") == "SBP ≥ 160 หรือ DBP ≥ 100":
