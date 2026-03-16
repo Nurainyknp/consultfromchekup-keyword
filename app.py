@@ -56,16 +56,15 @@ def update_keywords():
     selected = []
 
     # Vital signs
-    if st.session_state.get("chk_bp"):
+    if st.session_state.get("radio_bp") == "SBP ≥ 160 หรือ DBP ≥ 100":
         selected.append("Abnormal BP")
-    if st.session_state.get("chk_bp_fu1month"):
+    if st.session_state.get("radio_bp") == "BP 140-159/90-99":
         selected.append("Abnormal BP F/U 1 month")
     if st.session_state.get("chk_pulse_abnormal"):
         selected.append("Abnormal Pulse")
     if st.session_state.get("chk_temp"):
         selected.append("Fever")
-    if st.session_state.get("chk_resp"):
-        selected.append("Abnormal Respiration")
+
 
     # CBC: รวบรวมรายละเอียดของ CBC หากเลือกตัวเลือก CBC
     if st.session_state.get("cbc_main"):
@@ -270,8 +269,7 @@ def update_keywords():
     # -------------------------------
     # F/U Options: เพิ่ม keyword เมื่อเลือก F/U 3 เดือน หรือ F/U 6 เดือน
     keys_for_fu = [
-        "chk_bp", "chk_bp_fu1month", "chk_pulse_abnormal", "chk_temp", "chk_resp",
-        "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
+        "chk_pulse_abnormal", "chk_temp", "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
         "chk_rbc", "chk_wbc", "chk_plt", "chk_neutro", "chk_lymph", "chk_eos",
         "chk_glu", "chk_hba1c", "chk_tc", "chk_trig", "chk_hdl", "chk_ldl",
         "chk_uric", "chk_urinecre", "chk_microalb", "lft_main", "chk_ast", "chk_alt",
@@ -282,7 +280,7 @@ def update_keywords():
         "chk_cxr", "chk_us", "chk_mammo", "chk_12lead", "chk_est", "chk_other_investigation",
         "chk_consult"
     ]
-    if any(st.session_state.get(key) for key in keys_for_fu):
+    if (st.session_state.get("radio_bp") in ["SBP ≥ 160 หรือ DBP ≥ 100", "BP 140-159/90-99"]) or any(st.session_state.get(key) for key in keys_for_fu):
         if st.session_state.get("chk_fu3"):
             selected.append("F/U 3 mo.")
         if st.session_state.get("chk_fu6"):
@@ -297,9 +295,12 @@ def clear_keywords():
             "cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main",
             "ua_main", "txt_cxr", "txt_us",
             "txt_12lead", "txt_est", "txt_other_investigation", "txt_consult", "radio_birads",
-            "txt_audiometry", "txt_vision"
+            "txt_audiometry", "txt_vision", "radio_bp"
         ]:
-            st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
+            if k == "radio_bp":
+                st.session_state[k] = "ไม่เลือก"
+            else:
+                st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
 
 # ✅ แสดงผลลัพธ์ของ consult
@@ -333,7 +334,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 # ==================================================================
 # ✅ F/U Options (แทรกบรรทัดใหม่ก่อน Section 1)
 fu_keys = [
-    "chk_bp", "chk_bp_fu1month", "chk_pulse_abnormal", "chk_temp", "chk_resp",
+    "chk_pulse_abnormal", "chk_temp",
     "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
     "chk_rbc", "chk_wbc", "chk_plt", "chk_neutro", "chk_lymph", "chk_eos",
     "chk_glu", "chk_hba1c", "chk_tc", "chk_trig", "chk_hdl", "chk_ldl",
@@ -345,7 +346,7 @@ fu_keys = [
     "chk_cxr", "chk_us", "chk_mammo", "chk_12lead", "chk_est", "chk_other_investigation",
     "chk_consult"
 ]
-any_section_selected = any(st.session_state.get(key) for key in fu_keys)
+any_section_selected = (st.session_state.get("radio_bp") in ["SBP ≥ 160 หรือ DBP ≥ 100", "BP 140-159/90-99"]) or any(st.session_state.get(key) for key in fu_keys)
 
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown(
@@ -370,8 +371,16 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     col_vs, col_pe = st.columns(2)
 
     with col_vs:
-        st.checkbox("SBP ≥ 160 หรือ DBP ≥ 100", key="chk_bp", on_change=update_keywords)
-        if st.session_state.get("chk_bp"):
+        if "radio_bp" not in st.session_state:
+            st.session_state.radio_bp = "ไม่เลือก"
+
+        st.radio(
+            "ความดันโลหิต",
+            ["ไม่เลือก", "SBP ≥ 160 หรือ DBP ≥ 100", "BP 140-159/90-99"],
+            key="radio_bp",
+            on_change=update_keywords
+        )
+        if st.session_state.get("radio_bp") == "SBP ≥ 160 หรือ DBP ≥ 100":
             st.markdown(
                 '''
                 <style>
@@ -387,10 +396,8 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
                 unsafe_allow_html=True
             )
 
-        st.checkbox("BP 140-159/90-99", key="chk_bp_fu1month", on_change=update_keywords)
         st.checkbox("ชีพจรผิดปกติ", key="chk_pulse_abnormal", on_change=update_keywords)
         st.checkbox("ไข้ (≥ 37.5 °C)", key="chk_temp", on_change=update_keywords)
-        st.checkbox("การหายใจผิดปกติ", key="chk_resp", on_change=update_keywords)
 
     with col_pe:
         st.markdown("**โปรดระบุเมื่อการตรวจร่างกายผิดปกติ**")
