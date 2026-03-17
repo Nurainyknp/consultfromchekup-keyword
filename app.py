@@ -56,41 +56,22 @@ def update_keywords():
     selected = []
 
     # Vital signs
-    if st.session_state.get("radio_bp") == "SBP ≥ 160 หรือ DBP ≥ 100":
+    if st.session_state.get("chk_bp"):
         selected.append("Abnormal BP")
-    if st.session_state.get("radio_bp") == "BP 140-159/90-99":
+    if st.session_state.get("chk_bp_fu1month"):
         selected.append("Abnormal BP F/U 1 month")
     if st.session_state.get("chk_pulse_abnormal"):
         selected.append("Abnormal Pulse")
     if st.session_state.get("chk_temp"):
         selected.append("Fever")
+    if st.session_state.get("chk_resp"):
+        selected.append("Abnormal Respiration")
 
-
-    # CBC: รวบรวมรายละเอียดของ CBC หากเลือกตัวเลือก CBC
+    # CBC
     if st.session_state.get("cbc_main"):
-        cbc_details = []
-        if st.session_state.get("chk_anemia"):
-            cbc_details.append("Anemia")
-        if st.session_state.get("chk_hb"):
-            cbc_details.append("Hemoglobin (Hb)")
-        if st.session_state.get("chk_hct"):
-            cbc_details.append("Hematocrit (Hct)")
-        if st.session_state.get("chk_rbc"):
-            cbc_details.append("Red blood cell (RBC)")
-        if st.session_state.get("chk_wbc"):
-            cbc_details.append("White blood cell (WBC)")
-        if st.session_state.get("chk_plt"):
-            cbc_details.append("Platelet count (PLT)")
-        if st.session_state.get("chk_neutro"):
-            cbc_details.append("Neutrophil")
-        if st.session_state.get("chk_lymph"):
-            cbc_details.append("Lymphocytes")
-        if st.session_state.get("chk_eos"):
-            cbc_details.append("Eosinophils")
-        if cbc_details:
-            selected.append("Abnormal CBC (" + ", ".join(cbc_details) + ")")
-        else:
-            selected.append("Abnormal CBC")
+        selected.append("Abnormal CBC")
+    if st.session_state.get("chk_anemia"):
+        selected.append("Anemia")
 
     # Sugar
     sugar_items = []
@@ -102,17 +83,8 @@ def update_keywords():
         selected.append("Abnormal Sugar (" + ", ".join(sugar_items) + ")")
 
     # Lipid
-    lipid_items = []
-    if st.session_state.get("chk_tc"):
-        lipid_items.append("TC")
-    if st.session_state.get("chk_trig"):
-        lipid_items.append("Trig")
-    if st.session_state.get("chk_hdl"):
-        lipid_items.append("HDL")
-    if st.session_state.get("chk_ldl"):
-        lipid_items.append("LDL-C")
-    if lipid_items:
-        selected.append("Abnormal Lipid (" + ", ".join(lipid_items) + ")")
+    if st.session_state.get("chk_lipid"):
+        selected.append("Abnormal Lipid")
 
     # Metabolic
     if st.session_state.get("chk_uric"):
@@ -124,16 +96,7 @@ def update_keywords():
 
     # LFT
     if st.session_state.get("lft_main"):
-        lft_items = []
-        for k, label in {
-            "chk_ast": "AST", "chk_alt": "ALT", "chk_alp": "ALP", "chk_ggt": "GGT"
-        }.items():
-            if st.session_state.get(k):
-                lft_items.append(label)
-        if lft_items:
-            selected.append("Abnormal LFT (" + ", ".join(lft_items) + ")")
-        else:
-            selected.append("Abnormal LFT")
+        selected.append("Abnormal LFT")
 
     # PE
     if st.session_state.get("pe_input"):
@@ -179,19 +142,7 @@ def update_keywords():
 
     # UA
     if st.session_state.get("ua_main"):
-        ua_items = []
-        if st.session_state.get("chk_ua_wbc"):
-            ua_items.append("WBC")
-        if st.session_state.get("chk_ua_rbc"):
-            ua_items.append("RBC")
-        if st.session_state.get("chk_ua_protein"):
-            ua_items.append("Protein")
-        if st.session_state.get("chk_ua_glucose"):
-            ua_items.append("Glucose")
-        if ua_items:
-            selected.append("Abnormal UA (" + ", ".join(ua_items) + ")")
-        else:
-            selected.append("Abnormal UA")
+        selected.append("Abnormal UA")
 
     # Vitamin D
     if st.session_state.get("chk_vitd"):
@@ -269,7 +220,8 @@ def update_keywords():
     # -------------------------------
     # F/U Options: เพิ่ม keyword เมื่อเลือก F/U 3 เดือน หรือ F/U 6 เดือน
     keys_for_fu = [
-        "chk_pulse_abnormal", "chk_temp", "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
+        "chk_bp", "chk_bp_fu1month", "chk_pulse_abnormal", "chk_temp", "chk_resp",
+        "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
         "chk_rbc", "chk_wbc", "chk_plt", "chk_neutro", "chk_lymph", "chk_eos",
         "chk_glu", "chk_hba1c", "chk_tc", "chk_trig", "chk_hdl", "chk_ldl",
         "chk_uric", "chk_urinecre", "chk_microalb", "lft_main", "chk_ast", "chk_alt",
@@ -280,7 +232,7 @@ def update_keywords():
         "chk_cxr", "chk_us", "chk_mammo", "chk_12lead", "chk_est", "chk_other_investigation",
         "chk_consult"
     ]
-    if (st.session_state.get("radio_bp") in ["SBP ≥ 160 หรือ DBP ≥ 100", "BP 140-159/90-99"]) or any(st.session_state.get(key) for key in keys_for_fu):
+    if any(st.session_state.get(key) for key in keys_for_fu):
         if st.session_state.get("chk_fu3"):
             selected.append("F/U 3 mo.")
         if st.session_state.get("chk_fu6"):
@@ -295,12 +247,9 @@ def clear_keywords():
             "cbc_main", "pe_input", "lft_main", "kidney_main", "thyroid_main",
             "ua_main", "txt_cxr", "txt_us",
             "txt_12lead", "txt_est", "txt_other_investigation", "txt_consult", "radio_birads",
-            "txt_audiometry", "txt_vision", "radio_bp"
+            "txt_audiometry", "txt_vision"
         ]:
-            if k == "radio_bp":
-                st.session_state[k] = None
-            else:
-                st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
+            st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
 
 # ✅ แสดงผลลัพธ์ของ consult
@@ -334,7 +283,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 # ==================================================================
 # ✅ F/U Options (แทรกบรรทัดใหม่ก่อน Section 1)
 fu_keys = [
-    "chk_pulse_abnormal", "chk_temp",
+    "chk_bp", "chk_bp_fu1month", "chk_pulse_abnormal", "chk_temp", "chk_resp",
     "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
     "chk_rbc", "chk_wbc", "chk_plt", "chk_neutro", "chk_lymph", "chk_eos",
     "chk_glu", "chk_hba1c", "chk_tc", "chk_trig", "chk_hdl", "chk_ldl",
@@ -346,7 +295,7 @@ fu_keys = [
     "chk_cxr", "chk_us", "chk_mammo", "chk_12lead", "chk_est", "chk_other_investigation",
     "chk_consult"
 ]
-any_section_selected = (st.session_state.get("radio_bp") in ["SBP ≥ 160 หรือ DBP ≥ 100", "BP 140-159/90-99"]) or any(st.session_state.get(key) for key in fu_keys)
+any_section_selected = any(st.session_state.get(key) for key in fu_keys)
 
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown(
@@ -371,17 +320,8 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     col_vs, col_pe = st.columns(2)
 
     with col_vs:
-        if "radio_bp" not in st.session_state:
-            st.session_state.radio_bp = None
-
-        st.radio(
-            "ความดันโลหิต",
-            ["SBP ≥ 160 หรือ DBP ≥ 100", "BP 140-159/90-99"],
-            key="radio_bp",
-            index=None,
-            on_change=update_keywords
-        )
-        if st.session_state.get("radio_bp") == "SBP ≥ 160 หรือ DBP ≥ 100":
+        st.checkbox("SBP ≥ 160 หรือ DBP ≥ 100", key="chk_bp", on_change=update_keywords)
+        if st.session_state.get("chk_bp"):
             st.markdown(
                 '''
                 <style>
@@ -397,8 +337,10 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
                 unsafe_allow_html=True
             )
 
+        st.checkbox("BP 140-159/90-99", key="chk_bp_fu1month", on_change=update_keywords)
         st.checkbox("ชีพจรผิดปกติ", key="chk_pulse_abnormal", on_change=update_keywords)
         st.checkbox("ไข้ (≥ 37.5 °C)", key="chk_temp", on_change=update_keywords)
+        st.checkbox("การหายใจผิดปกติ", key="chk_resp", on_change=update_keywords)
 
     with col_pe:
         st.markdown("**โปรดระบุเมื่อการตรวจร่างกายผิดปกติ**")
@@ -421,17 +363,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
 
     with col_cbc:
         st.checkbox("ความสมบูรณ์ของเม็ดเลือด (CBC)", key="cbc_main", on_change=update_keywords)
-        if st.session_state.get("cbc_main"):
-            # เพิ่ม checkbox ซีด (Anemia) ก่อน Hemoglobin (Hb)
-            st.checkbox("ซีด (Anemia)", key="chk_anemia", on_change=update_keywords)
-            st.checkbox("Hemoglobin (Hb)", key="chk_hb", on_change=update_keywords)
-            st.checkbox("Hematocrit (Hct)", key="chk_hct", on_change=update_keywords)
-            st.checkbox("Red blood cell (RBC)", key="chk_rbc", on_change=update_keywords)
-            st.checkbox("White blood cell (WBC)", key="chk_wbc", on_change=update_keywords)
-            st.checkbox("Platelet count (PLT)", key="chk_plt", on_change=update_keywords)
-            st.checkbox("Neutrophil", key="chk_neutro", on_change=update_keywords)
-            st.checkbox("Lymphocytes", key="chk_lymph", on_change=update_keywords)
-            st.checkbox("Eosinophils", key="chk_eos", on_change=update_keywords)
+        st.checkbox("ซีด (Anemia)", key="chk_anemia", on_change=update_keywords)
 
     with col_met:
         st.markdown("🔹 Metabolic")
@@ -453,37 +385,13 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
                 unsafe_allow_html=True
             )
         st.checkbox("HbA1C", key="chk_hba1c", on_change=update_keywords)
-        st.checkbox("Total Cholesterol", key="chk_tc", on_change=update_keywords)
-        st.checkbox("Triglyceride", key="chk_trig", on_change=update_keywords)
-        st.checkbox("HDL-C", key="chk_hdl", on_change=update_keywords)
-        st.checkbox("LDL-C", key="chk_ldl", on_change=update_keywords)
-        if st.session_state.get("chk_ldl"):
-            st.markdown(
-                '''
-                <span style="color: red; font-weight: bold; font-size: 24px;">ถ้า≥ 190</span>
-                <span class="blinking" style="color: red; font-weight: bold; font-size: 24px; margin-left: 10px;">ส่งทันที</span>
-                <style>
-                .blinking {
-                  animation: blinker 1s linear infinite;
-                }
-                @keyframes blinker {
-                  50% { opacity: 0; }
-                }
-                </style>
-                ''',
-                unsafe_allow_html=True
-            )
+        st.checkbox("ไขมันในเลือด (Cholesterol,Triglyceride,HDL,LDL)", key="chk_lipid", on_change=update_keywords)
         st.checkbox("Uric Acid", key="chk_uric", on_change=update_keywords)
         st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
         st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
 
     with col_lft:
-        st.checkbox("การทำงานของตับ (Liver function test)", key="lft_main", on_change=update_keywords)
-        if st.session_state.get("lft_main"):
-            st.checkbox("AST (SGOT)", key="chk_ast", on_change=update_keywords)
-            st.checkbox("ALT (SGPT)", key="chk_alt", on_change=update_keywords)
-            st.checkbox("ALP", key="chk_alp", on_change=update_keywords)
-            st.checkbox("GGT", key="chk_ggt", on_change=update_keywords)
+        st.checkbox("การทำงานของตับ (Liver function test): AST,ALT,ALP,GGT", key="lft_main", on_change=update_keywords)
 
     col_kidney, col_thyroid, col_other = st.columns(3)
 
@@ -494,11 +402,6 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
             st.checkbox("Creatinine", key="chk_creatinine", on_change=update_keywords)
             st.checkbox("eGFR", key="chk_egfr", on_change=update_keywords)
         st.checkbox("การตรวจปัสสาวะ (Urinalysis: UA)", key="ua_main", on_change=update_keywords)
-        if st.session_state.get("ua_main"):
-            st.checkbox("White blood cell (WBC)", key="chk_ua_wbc", on_change=update_keywords)
-            st.checkbox("Red blood cell (RBC)", key="chk_ua_rbc", on_change=update_keywords)
-            st.checkbox("Protein", key="chk_ua_protein", on_change=update_keywords)
-            st.checkbox("Glucose", key="chk_ua_glucose", on_change=update_keywords)
 
     with col_thyroid:
         st.checkbox("การทำงานของต่อมไทรอยด์ (Thyroid function test)", key="thyroid_main", on_change=update_keywords)
