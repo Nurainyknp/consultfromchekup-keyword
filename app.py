@@ -404,12 +404,12 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
                 ''',
                 unsafe_allow_html=True
             )
-        st.checkbox("Uric Acid", key="chk_uric", on_change=update_keywords)
-        st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
-        st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
 
     with col_lft:
         st.checkbox("การทำงานของตับ (Liver function test): AST,ALT,ALP,GGT", key="lft_main", on_change=update_keywords)
+        st.checkbox("Uric Acid", key="chk_uric", on_change=update_keywords)
+        st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
+        st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
 
     col_kidney, col_thyroid, col_other = st.columns(3)
 
@@ -466,23 +466,17 @@ st.markdown(
 )
 
 with st.expander("คลิกเพื่อเลือกข้อมูล (Other investigations)", expanded=False):
-    col_12lead, col_est, col_other_invest = st.columns(3)
-    
-    with col_12lead:
+    col_left, col_right = st.columns([2, 1])
+
+    with col_left:
         st.checkbox("12-lead EKG", key="chk_12lead", on_change=update_keywords)
-    
-    with col_est:
         st.checkbox("Exercise stress test (EST)", key="chk_est", on_change=update_keywords)
-    
-    with col_other_invest:
+        st.checkbox("การตรวจสมรรถภาพการได้ยิน", key="chk_audiometry", on_change=update_keywords)
+        st.checkbox("การตรวจตา/การตรวจตาทางอาชีวอนามัย", key="chk_vision", on_change=update_keywords)
+
+    with col_right:
         st.checkbox("ผลผิดปกติอื่น ๆ", key="chk_other_investigation", on_change=update_keywords)
         st.text_input("จำเป็นต้องระบุ", key="txt_other_investigation", on_change=update_keywords)
-    # จัดให้อยู่ในแถวเดียวกัน โดยแบ่งเป็น 2 คอลัมน์
-    col_audiometry, col_vision = st.columns(2)
-    with col_audiometry:
-        st.checkbox("การตรวจสมรรถภาพการได้ยิน", key="chk_audiometry", on_change=update_keywords)
-    with col_vision:
-        st.checkbox("การตรวจตา/การตรวจตาทางอาชีวอนามัย", key="chk_vision", on_change=update_keywords)
 
 # ✅ Section 5: Consult
 st.markdown(
