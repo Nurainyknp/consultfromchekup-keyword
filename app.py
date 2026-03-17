@@ -158,11 +158,9 @@ def update_keywords():
 
     # Radiology: CXR and US
     if st.session_state.get("chk_cxr"):
-        cxr_detail = st.session_state.get("txt_cxr", "").strip()
-        selected.append(f"Abnormal CXR ({cxr_detail})" if cxr_detail else "Abnormal CXR")
+        selected.append("Abnormal CXR")
     if st.session_state.get("chk_us"):
-        us_detail = st.session_state.get("txt_us", "").strip()
-        selected.append(f"Abnormal US ({us_detail})" if us_detail else "Abnormal US")
+        selected.append("Abnormal US")
     
     # Radiology additional: Mammogram with ultrasound breast
     if st.session_state.get("chk_mammo"):
@@ -172,34 +170,18 @@ def update_keywords():
     # -------------------------------
     # Section 4: Other investigations
     if st.session_state.get("chk_12lead"):
-        text = st.session_state.get("txt_12lead", "").strip()
-        if text:
-            selected.append("12-lead EKG (" + text + ")")
-        else:
-            selected.append("Abnormal EKG")
+        selected.append("Abnormal EKG")
             
     if st.session_state.get("chk_est"):
-        text = st.session_state.get("txt_est", "").strip()
-        if text:
-            selected.append("Abnormal EST (" + text + ")")
-        else:
-            selected.append("Abnormal EST")
+        selected.append("Abnormal EST")
             
     # เพิ่ม: การตรวจสมรรถภาพการได้ยิน
     if st.session_state.get("chk_audiometry"):
-        audiometry_detail = st.session_state.get("txt_audiometry", "").strip()
-        if audiometry_detail:
-            selected.append("Abnormal Audiometry (" + audiometry_detail + ")")
-        else:
-            selected.append("Abnormal Audiometry")
+        selected.append("Abnormal Audiometry")
             
     # เพิ่ม: การตรวจตา/การตรวจตาทางอาชีวอนามัย
     if st.session_state.get("chk_vision"):
-        vision_detail = st.session_state.get("txt_vision", "").strip()
-        if vision_detail:
-            selected.append("Abnormal Vision (" + vision_detail + ")")
-        else:
-            selected.append("Abnormal Vision")
+        selected.append("Abnormal Vision")
             
     if st.session_state.get("chk_other_investigation"):
         text = st.session_state.get("txt_other_investigation", "").strip()
@@ -233,6 +215,8 @@ def update_keywords():
         "chk_consult"
     ]
     if any(st.session_state.get(key) for key in keys_for_fu):
+        if st.session_state.get("chk_fu1"):
+            selected.append("F/U 1 mo.")
         if st.session_state.get("chk_fu3"):
             selected.append("F/U 3 mo.")
         if st.session_state.get("chk_fu6"):
@@ -301,10 +285,12 @@ st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown(
     "<div style='font-weight:bold; font-size:16px;'>ตัวเลือก F/U</div>", unsafe_allow_html=True
 )
-col_fu1, col_fu2 = st.columns(2)
+col_fu1, col_fu2, col_fu3 = st.columns(3)
 with col_fu1:
-    st.checkbox("F/U 3 เดือน", key="chk_fu3", disabled=not any_section_selected, on_change=update_keywords)
+    st.checkbox("F/U 1 เดือน", key="chk_fu1", disabled=not any_section_selected, on_change=update_keywords)
 with col_fu2:
+    st.checkbox("F/U 3 เดือน", key="chk_fu3", disabled=not any_section_selected, on_change=update_keywords)
+with col_fu3:
     st.checkbox("F/U 6 เดือน", key="chk_fu6", disabled=not any_section_selected, on_change=update_keywords)
 
 # ==================================================================
@@ -463,10 +449,8 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     col_cxr, col_us = st.columns([1, 1])
     with col_cxr:
         st.checkbox("Chest PA", key="chk_cxr", on_change=update_keywords)
-        st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_cxr", on_change=update_keywords)
     with col_us:
         st.checkbox("Abdominal ultrasound", key="chk_us", on_change=update_keywords)
-        st.text_input("จำเป็นต้องระบุอวัยวะ", key="txt_us", on_change=update_keywords)
     
     st.checkbox("Mammogram with ultrasound breast", key="chk_mammo", on_change=update_keywords)
     if st.session_state.get("chk_mammo"):
@@ -486,11 +470,9 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     
     with col_12lead:
         st.checkbox("12-lead EKG", key="chk_12lead", on_change=update_keywords)
-        st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_12lead", on_change=update_keywords)
     
     with col_est:
         st.checkbox("Exercise stress test (EST)", key="chk_est", on_change=update_keywords)
-        st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_est", on_change=update_keywords)
     
     with col_other_invest:
         st.checkbox("ผลผิดปกติอื่น ๆ", key="chk_other_investigation", on_change=update_keywords)
@@ -499,10 +481,8 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
     col_audiometry, col_vision = st.columns(2)
     with col_audiometry:
         st.checkbox("การตรวจสมรรถภาพการได้ยิน", key="chk_audiometry", on_change=update_keywords)
-        st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_audiometry", on_change=update_keywords)
     with col_vision:
         st.checkbox("การตรวจตา/การตรวจตาทางอาชีวอนามัย", key="chk_vision", on_change=update_keywords)
-        st.text_input("ระบุหรือไม่ระบุก็ได้", key="txt_vision", on_change=update_keywords)
 
 # ✅ Section 5: Consult
 st.markdown(
