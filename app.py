@@ -371,7 +371,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
         if st.session_state.get("chk_glu"):
             st.markdown(
                 '''
-                <span style="color: red; font-weight: bold; font-size: 24px;">ถ้า≥ 126</span>
+                <span style="color: red; font-weight: bold; font-size: 24px;">ถ้า ≥ 180</span>
                 <span class="blinking" style="color: red; font-weight: bold; font-size: 24px; margin-left: 10px;">ส่งทันที</span>
                 <style>
                 .blinking {
@@ -385,7 +385,39 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
                 unsafe_allow_html=True
             )
         st.checkbox("HbA1C", key="chk_hba1c", on_change=update_keywords)
+        if st.session_state.get("chk_hba1c"):
+            st.markdown(
+                '''
+                <span style="color: red; font-weight: bold; font-size: 24px;">ถ้า ≥ 6.5</span>
+                <span class="blinking" style="color: red; font-weight: bold; font-size: 24px; margin-left: 10px;">ส่งทันที</span>
+                <style>
+                .blinking {
+                  animation: blinker 1s linear infinite;
+                }
+                @keyframes blinker {
+                  50% { opacity: 0; }
+                }
+                </style>
+                ''',
+                unsafe_allow_html=True
+            )
         st.checkbox("ไขมันในเลือด (Cholesterol,Triglyceride,HDL,LDL)", key="chk_lipid", on_change=update_keywords)
+        if st.session_state.get("chk_lipid"):
+            st.markdown(
+                '''
+                <span style="color: red; font-weight: bold; font-size: 24px;">ถ้า ≥ 190</span>
+                <span class="blinking" style="color: red; font-weight: bold; font-size: 24px; margin-left: 10px;">ส่งทันที</span>
+                <style>
+                .blinking {
+                  animation: blinker 1s linear infinite;
+                }
+                @keyframes blinker {
+                  50% { opacity: 0; }
+                }
+                </style>
+                ''',
+                unsafe_allow_html=True
+            )
         st.checkbox("Uric Acid", key="chk_uric", on_change=update_keywords)
         st.checkbox("Urine Creatinine", key="chk_urinecre", on_change=update_keywords)
         st.checkbox("Microalbumin", key="chk_microalb", on_change=update_keywords)
