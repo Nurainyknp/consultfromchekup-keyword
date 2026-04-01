@@ -161,7 +161,7 @@ def update_keywords():
         selected.append("Abnormal CXR")
     if st.session_state.get("chk_us"):
         selected.append("Abnormal US")
-    
+
     # Radiology additional: Mammogram with ultrasound breast
     if st.session_state.get("chk_mammo"):
         if st.session_state.get("radio_birads"):
@@ -171,18 +171,16 @@ def update_keywords():
     # Section 4: Other investigations
     if st.session_state.get("chk_12lead"):
         selected.append("Abnormal EKG")
-            
+
     if st.session_state.get("chk_est"):
         selected.append("Abnormal EST")
-            
-    # เพิ่ม: การตรวจสมรรถภาพการได้ยิน
+
     if st.session_state.get("chk_audiometry"):
         selected.append("Abnormal Audiometry")
-            
-    # เพิ่ม: การตรวจตา/การตรวจตาทางอาชีวอนามัย
+
     if st.session_state.get("chk_vision"):
         selected.append("Abnormal Vision")
-            
+
     if st.session_state.get("chk_other_investigation"):
         text = st.session_state.get("txt_other_investigation", "").strip()
         if text:
@@ -198,14 +196,14 @@ def update_keywords():
             selected.append("Consult (" + text + ")")
         else:
             selected.append("Consult")
-    
+
     # -------------------------------
-    # F/U Options: เพิ่ม keyword เมื่อเลือก F/U 3 เดือน หรือ F/U 6 เดือน
+    # F/U Options
     keys_for_fu = [
         "chk_bp", "chk_bp_fu1month", "chk_pulse_abnormal", "chk_temp", "chk_resp",
         "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
         "chk_rbc", "chk_wbc", "chk_plt", "chk_neutro", "chk_lymph", "chk_eos",
-        "chk_glu", "chk_hba1c", "chk_tc", "chk_trig", "chk_hdl", "chk_ldl",
+        "chk_glu", "chk_hba1c", "chk_lipid",
         "chk_uric", "chk_urinecre", "chk_microalb", "lft_main", "chk_ast", "chk_alt",
         "chk_alp", "chk_ggt", "chk_bun", "chk_creatinine", "chk_egfr",
         "ua_main", "chk_ua_wbc", "chk_ua_rbc", "chk_ua_protein", "chk_ua_glucose",
@@ -224,6 +222,7 @@ def update_keywords():
 
     st.session_state.selected_keywords = selected
 
+
 # ✅ ฟังก์ชันสำหรับล้างข้อมูล Keywords
 def clear_keywords():
     for k in list(st.session_state.keys()):
@@ -235,6 +234,7 @@ def clear_keywords():
         ]:
             st.session_state[k] = False if k.startswith("chk_") or k.endswith("_main") else ""
     st.session_state.selected_keywords = []
+
 
 # ✅ แสดงผลลัพธ์ของ consult
 update_keywords()
@@ -249,7 +249,6 @@ st.markdown(
 
 c1, c2, c3 = st.columns([2, 6, 2])
 with c1:
-    # ปุ่มคัดลอกข้อความ ทำการคัดลอกทันทีโดยไม่มี alert pop-up
     components.html(
         f"<button onclick=\"navigator.clipboard.writeText('{combined_text}');\""
         "style=\"padding:0.5em 1.2em; font-size:16px; border-radius:5px; background-color:#4CAF50; color:white; border:none; cursor:pointer;\">"
@@ -265,12 +264,12 @@ with c3:
 st.markdown("</div>", unsafe_allow_html=True)
 
 # ==================================================================
-# ✅ F/U Options (แทรกบรรทัดใหม่ก่อน Section 1)
+# ✅ F/U Options
 fu_keys = [
     "chk_bp", "chk_bp_fu1month", "chk_pulse_abnormal", "chk_temp", "chk_resp",
     "cbc_main", "chk_anemia", "chk_hb", "chk_hct",
     "chk_rbc", "chk_wbc", "chk_plt", "chk_neutro", "chk_lymph", "chk_eos",
-    "chk_glu", "chk_hba1c", "chk_tc", "chk_trig", "chk_hdl", "chk_ldl",
+    "chk_glu", "chk_hba1c", "chk_lipid",
     "chk_uric", "chk_urinecre", "chk_microalb", "lft_main", "chk_ast", "chk_alt",
     "chk_alp", "chk_ggt", "chk_bun", "chk_creatinine", "chk_egfr",
     "ua_main", "chk_ua_wbc", "chk_ua_rbc", "chk_ua_protein", "chk_ua_glucose",
@@ -333,9 +332,6 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
         st.text_input("", key="pe_input", on_change=update_keywords)
 
 # ==================================================================
-# ส่วนที่เหลือของ code (Section 2-5) ยังคงเหมือนเดิม
-# ==================================================================
-
 # ✅ Section 2: Lab results
 st.markdown(
     f"<div style='background-color:{'#444' if st.session_state.theme_mode == 'dark' else '#E0E0E0'}; "
@@ -370,6 +366,7 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
                 ''',
                 unsafe_allow_html=True
             )
+
         st.checkbox("HbA1C", key="chk_hba1c", on_change=update_keywords)
         if st.session_state.get("chk_hba1c"):
             st.markdown(
@@ -387,11 +384,12 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
                 ''',
                 unsafe_allow_html=True
             )
+
         st.checkbox("ไขมันในเลือด (Cholesterol,Triglyceride,HDL,LDL)", key="chk_lipid", on_change=update_keywords)
         if st.session_state.get("chk_lipid"):
             st.markdown(
                 '''
-                <span style="color: red; font-weight: bold; font-size: 24px;">ถ้า ≥ 190</span>
+                <span style="color: red; font-weight: bold; font-size: 24px;">ถ้า LDL ≥ 190</span>
                 <span class="blinking" style="color: red; font-weight: bold; font-size: 24px; margin-left: 10px;">ส่งทันที</span>
                 <style>
                 .blinking {
@@ -451,12 +449,15 @@ with st.expander("คลิกเพื่อเลือกข้อมูล (
         st.checkbox("Chest PA", key="chk_cxr", on_change=update_keywords)
     with col_us:
         st.checkbox("Abdominal ultrasound", key="chk_us", on_change=update_keywords)
-    
+
     st.checkbox("Mammogram with ultrasound breast", key="chk_mammo", on_change=update_keywords)
     if st.session_state.get("chk_mammo"):
-        st.radio("เลือก BI-RADS", 
-                 ["BI-RADS 3", "BI-RADS 4A", "BI-RADS 4B", "BI-RADS 4C", "BI-RADS 5"],
-                 key="radio_birads", on_change=update_keywords)
+        st.radio(
+            "เลือก BI-RADS",
+            ["BI-RADS 3", "BI-RADS 4A", "BI-RADS 4B", "BI-RADS 4C", "BI-RADS 5"],
+            key="radio_birads",
+            on_change=update_keywords
+        )
 
 # ✅ Section 4: Other investigations
 st.markdown(
